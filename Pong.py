@@ -1,39 +1,39 @@
-import SocketServer
 import sys
+from Queue import Queue
 
 import Logger
-from TCPHandler import TCPHandler
-
-
-def starttcp(server):
-    server.serve_forever()
-
-
-def startspi(master):
-    # master.serve_forever()
-    return
-
+from SPIServer import SPIServer
+from TCPServer import TCPServer
 
 if __name__ == "__main__":
-    global tcpserver
-    # global spiserver
+    tcpserver = None
+    spiserver = None
     try:
         Logger.log("Initializing variables")
         if len(sys.argv) == 3:
-            HOST = sys.argv[1]
-            PORT = int(sys.argv[2])
-            # Logger.logspi("Initializing spiserver")
-            # spiserver = 1  # SPIServer(0b00)
+            host = sys.argv[1]
+            port = int(sys.argv[2])
+            qspiread = Queue()
+            qspiwrite = Queue()
+            qtcpread = Queue()
+            qtcpwrite = Queue()
+            Logger.logspi("Initializing spiserver")
+            spiserver = SPIServer(qspiread, qspiwrite, 0b00, 0, 0)
             Logger.logtcp("Initializing tcpserver")
-            tcpserver = SocketServer.TCPServer((HOST, PORT), TCPHandler)
-            # Logger.logspi("Starting spiserver")
-            # thread.start_new(startspi, (spiserver,))
+            tcpserver = TCPServer(qtcpread, qtcpwrite, host, port)
+            Logger.logspi("Starting spiserver")
+            spiserver.start()
             Logger.logtcp("Starting tcpserver")
-            starttcp(tcpserver)
+            tcpserver.start()
+            spiserver.join()
+            tcpserver.join()
+
         else:
             Logger.error("Usage 'Pong.py <HOST> <PORT>'")
     except KeyboardInterrupt:
         Logger.logtcp("Shutting down tcpserver")
-        tcpserver.shutdown()
-        # Logger.logspi("Shutting down spiserver")
-        # spiserver.shutdown()
+        if tcpserver is not None:
+            tcpserver.shutdown()
+        Logger.logspi("Shutting down spiserver")
+        if spiserver is not None:
+            spiserver.shutdown()
