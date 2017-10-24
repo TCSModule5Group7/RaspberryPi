@@ -17,7 +17,7 @@ if __name__ == "__main__":
                 if data != "":
                     socket.sendall(data + "\n")
                     print "Sent: '{}'".format(data)
-
+            received = socket.recv(1024)
 
         finally:
             socket.close()
