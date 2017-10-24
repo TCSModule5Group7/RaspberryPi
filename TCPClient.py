@@ -18,6 +18,7 @@ if __name__ == "__main__":
                     socket.sendall(data + "\n")
                     print "Sent: '{}'".format(data)
 
+
         finally:
             socket.close()
     try:

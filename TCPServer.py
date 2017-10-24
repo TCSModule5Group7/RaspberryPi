@@ -28,8 +28,14 @@ class TCPServer(Thread):
     def listen(self):
         while self.running:
             received = self.client_socket.receive(1024)
+            self.send(self, "received:" + received)
 
     def shutdown(self):
         self.running = False
         self.client_socket.close()
         self.server_socket.close()
+
+    def send(self, data):
+        self.client.socket.sendall(data)
+
+
