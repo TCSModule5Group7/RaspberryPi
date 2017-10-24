@@ -3,10 +3,10 @@ from threading import Thread
 
 
 class SPIServer(Thread):
-    def __init__(self, qread, qwrite, mode, bus, device):
+    def __init__(self, q_read, q_write, mode, bus, device):
         Thread.__init__(self)
-        self.qread = qread
-        self.qwrite = qwrite
+        self.q_read = q_read
+        self.q_write = q_write
         self.running = False
         self.spi = spidev.SpiDev()
         self.spi.mode = mode
@@ -18,36 +18,36 @@ class SPIServer(Thread):
     def serve_forever(self):
         self.running = True
         while self.running:
-            txdata = [0x00]
-            rxdata = [0x00]
-            data = self.getter(self.qread)
-            # if there is data in qread:
+            tx_data = [0x00]
+            rx_data = [0x00]
+            data = self.getter(self.q_read)
+            # if there is data in q_read:
             if data > 0:
-                txdata[0] = data
-                rxdata = self.spi.xfer2(txdata)
+                tx_data[0] = data
+                rx_data = self.spi.xfer2(tx_data)
             else:
-                txdata[0] = [0x00]
-                rxdata = self.spi.xfer2(txdata)
+                tx_data[0] = [0x00]
+                rx_data = self.spi.xfer2(tx_data)
             # if we received data
-            if rxdata[0] > 0:
-                # put data to qwrite
-                self.producer(self.qwrite, rxdata)
+            if rx_data[0] > 0:
+                # put data to q_write
+                self.producer(self.q_write, rx_data)
 
     def shutdown(self):
         self.running = False
         self.spi.close()
 
     # gets data from queue
-    def getter(self, q):
+    def getter(self, queue):
         while True:
-            data = q.get()
+            data = queue.get()
             if data is None:
                 break
-            q.task_done()
+            queue.task_done()
             return data
 
     # writes data to write queue
-    def producer(self, q, data):
+    def producer(self, queue, data):
         while True:
             # put data on queue
-            q.put(data)
+            queue.put(data)

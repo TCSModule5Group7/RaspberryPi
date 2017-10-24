@@ -5,57 +5,31 @@ import Logger
 
 
 class TCPServer(Thread):
-    def __init__(self, qread, qwrite, host, port):
+    def __init__(self, q_read, q_write, host, port):
         Thread.__init__(self)
-        self.qread = qread
-        self.qwrite = qwrite
-        self.serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.serversocket.bind((host, port))
+        self.q_read = q_read
+        self.q_write = q_write
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.bind((host, port))
+        self.client_socket = None
+        self.client_address = None
         self.running = False
-        self.handler = None
 
     def run(self):
         Logger.logtcp("Waiting for client")
-        self.awaitclient()
-
-    def awaitclient(self):
         self.running = True
-        self.serversocket.listen(1)
-        clientsocket, address = self.serversocket.accept()
-        handler = TCPClientHandler(self, clientsocket)
-        # print 'Connection address:', addr
-        #
-        # while 1:
-        #     data = conn.recv(BUFFER_SIZE)
-        #
-        # if not data: break
-        #
-        # print "received data:", data
-        #
-        # conn.send(data)  # echo
-        #
-        # conn.close()
+        self.await_client()
+        self.listen()
 
+    def await_client(self):
+        self.server_socket.listen(1)
+        self.client_socket, self.client_address = self.server_socket.accept()
 
-def shutdown(self):
-    for handler in self.handlers:
-        handler.shutdown()
-    return
-
-
-class TCPClientHandler(Thread):
-    def __init__(self, server, clientsocket):
-        Thread.__init__(self)
-        self.clientsocket = clientsocket
-        self.running = False
-
-    def run(self):
-        self.running = True
+    def listen(self):
         while self.running:
-            self.clientsocket.recv(1024)
-
-    def send(self):
-        self.clientsocket
+            received = self.client_socket.receive(1024)
 
     def shutdown(self):
-        self.clientsocket.close()
+        self.running = False
+        self.client_socket.close()
+        self.server_socket.close()
