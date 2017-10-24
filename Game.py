@@ -57,7 +57,8 @@ class Entity:
             for y in range(self.height):
                 # if y + self.y - self.height / 2 >= Field.HEIGHT: continue
                 # if x + self.x - self.width / 2 >= Field.WIDTH: continue
-                field.pixels[x + self.x - self.width / 2, y + self.y - self.height / 2] = 255
+                field.pixels[
+                    (x + self.x - self.width / 2) % Field.WIDTH, (y + self.y - self.height / 2) % Field.HEIGHT] = 255
 
         return field.pixels
 
@@ -67,8 +68,13 @@ class Paddle(Entity):
         Entity.__init__(self, x, y, 50, 200)
 
     def move(self, dx, dy):
-        self.dx += dx
         self.dy += dy
+
+    def update(self, field):
+        if (0 < self.y - self.height / 2 + self.dy) and (self.y + self.height / 2 + self.dy < Field.HEIGHT):
+            Entity.update(self, field)
+        else:
+            self.dy = 0
 
 
 class Bal(Entity):
@@ -83,7 +89,7 @@ class Bal(Entity):
         for entity in field.entities:
             if entity == self: continue
             if abs(entity.x - self.x) * 2 < (entity.width + self.width) and abs(entity.y - self.y) * 2 < (
-                entity.height + self.height):
+                        entity.height + self.height):
                 self.dx *= -1
                 self.dy *= -1
             if self.x + self.width / 2 >= Field.WIDTH or self.x - self.width / 2 <= 0:
