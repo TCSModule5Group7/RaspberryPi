@@ -14,11 +14,12 @@ class SPIServer(Thread):
         self.spi.open(bus, device)
 
     def run(self):
-        self.serve_forever()
+        self.transfer()
 
-    def serve_forever(self):
+    def transfer(self):
         self.running = True
         while self.running:
+
             try:
                 write_data = self.q_write.get(False)
             except Queue.Empty:
@@ -26,7 +27,11 @@ class SPIServer(Thread):
 
             read_data = self.spi.xfer2(write_data)
             if read_data[0] != 0x00:
-                self.q_read.put(read_data, False)
+                try:
+                    self.q_read.put(read_data, False)
+                except Queue.Full:
+                    continue
+
             self.q_write.task_done()
 
     def shutdown(self):

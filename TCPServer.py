@@ -1,3 +1,4 @@
+import Queue
 import socket
 from threading import Thread
 
@@ -28,20 +29,26 @@ class TCPServer(Thread):
 
     def write(self):
         while self.running:
-            line = self.q_write.get()
-            self.q_write.task_done()
-            self.client_socket.sendall(line)
+            try:
+                line = self.q_write.get()
+                self.q_write.task_done()
+                self.client_socket.sendall(line)
+            except Queue.Empty:
+                continue
 
     # Some code from https://www.experts-exchange.com/questions/22056190/Sockets-recv-function-on-a-new-line.html
     def read(self):
         data = ""
         while self.running:
-            received = self.client_socket.receive(1024)
-            data += received
-            if "\n" in data:
-                line, data = data.split("\n", 1)
-                self.q_read.put(line)
-                Logger.logtcp("received: " + line)
+            try:
+                received = self.client_socket.receive(1024)
+                data += received
+                if "\n" in data:
+                    line, data = data.split("\n", 1)
+                    self.q_read.put(line)
+                    Logger.logtcp("received: " + line)
+            except Queue.Full:
+                continue
 
     def shutdown(self):
         self.running = False
