@@ -40,10 +40,10 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         Logger.log("Received KeyboardInterrupt")
     finally:
-        Logger.logtcp("Shutting down tcp-server")
-        if tcp_server is not None:
-            tcp_server.shutdown()
         Logger.logspi("Shutting down spi-server")
         if spi_server is not None:
             spi_server.shutdown()
+        Logger.logtcp("Shutting down tcp-server")
+        if tcp_server is not None:
+            tcp_server.shutdown()
         Logger.log("Shutting down")
