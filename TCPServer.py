@@ -16,33 +16,34 @@ class TCPServer(Thread):
         self.running = False
 
     def run(self):
-        Logger.logtcp("Waiting for client")
         self.running = True
         self.await_client()
-        self.listen()
+        writer = Thread(self.write)
+        writer.start()
+        self.read()
 
     def await_client(self):
         self.server_socket.listen(1)
         self.client_socket, self.client_address = self.server_socket.accept()
 
-    def listen(self):
+    def write(self):
+        while self.running:
+            line = self.q_write.get()
+            self.q_write.task_done()
+            self.client_socket.sendall(line)
+
+    # Some code from https://www.experts-exchange.com/questions/22056190/Sockets-recv-function-on-a-new-line.html
+    def read(self):
+        data = ""
         while self.running:
             received = self.client_socket.receive(1024)
-            self.send(self, "received:" + received)
-            self.q_write.put(received)
+            data += received
+            if "\n" in data:
+                line, data = data.split("\n", 1)
+                self.q_read.put(line)
+                Logger.logtcp("received: " + line)
 
     def shutdown(self):
         self.running = False
         self.client_socket.close()
         self.server_socket.close()
-
-
-    def send(self, data):
-        while True:
-            data = self.q_read.get()
-            if data is None:
-                break
-            self.q_read.task_done()
-            self.client.socket.sendall(data)
-
-
