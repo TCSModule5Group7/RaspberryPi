@@ -8,13 +8,13 @@ import Logger
 class TCPServer(Thread):
     def __init__(self, q_read, q_write, host, port):
         Thread.__init__(self)
+        self.running = False
         self.q_read = q_read
         self.q_write = q_write
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind((host, port))
         self.client_socket = None
         self.client_address = None
-        self.running = False
 
     def run(self):
         self.running = True

@@ -6,9 +6,9 @@ from threading import Thread
 class SPIServer(Thread):
     def __init__(self, q_read, q_write, mode, bus, device):
         Thread.__init__(self)
+        self.running = False
         self.q_read = q_read
         self.q_write = q_write
-        self.running = False
         self.spi = spidev.SpiDev()
         self.spi.mode = mode
         self.spi.open(bus, device)
