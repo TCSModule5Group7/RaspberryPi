@@ -10,6 +10,7 @@ import argparse
 import imutils
 import cv2
 import Queue
+import atexit
 
 
 class Tracker(Thread):
@@ -18,6 +19,10 @@ class Tracker(Thread):
         self.q_read = q_read
         self.campath = campath
         self.buffersize = 64  # buffersize
+
+    def exit_handler(self, camera):
+        camera.release()
+        cv2.destroyAllWindows()
 
     def run(self):
         self.track()
@@ -109,6 +114,5 @@ class Tracker(Thread):
             if key == ord("q"):
                 break
 
-        # cleanup the camera and close any open windows
-        camera.release()
-        cv2.destroyAllWindows()
+            # cleanup the camera and close any open windows at exit
+            atexit.register(self.exit_handler)
