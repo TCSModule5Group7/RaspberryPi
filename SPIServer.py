@@ -1,3 +1,4 @@
+import Queue
 import spidev
 from threading import Thread
 
@@ -18,36 +19,16 @@ class SPIServer(Thread):
     def serve_forever(self):
         self.running = True
         while self.running:
-            tx_data = [0x00]
-            rx_data = [0x00]
-            data = self.getter(self.q_read)
-            # if there is data in q_read:
-            if data > 0:
-                tx_data[0] = data
-                rx_data = self.spi.xfer2(tx_data)
-            else:
-                tx_data[0] = [0x00]
-                rx_data = self.spi.xfer2(tx_data)
-            # if we received data
-            if rx_data[0] > 0:
-                # put data to q_write
-                self.producer(self.q_write, rx_data)
+            try:
+                write_data = self.q_write.get(False)
+            except Queue.Empty:
+                write_data = [0x00]
+
+            read_data = self.spi.xfer2(write_data)
+            if read_data[0] != 0x00:
+                self.q_read.put(read_data, False)
+            self.q_write.task_done()
 
     def shutdown(self):
         self.running = False
         self.spi.close()
-
-    # gets data from queue
-    def getter(self, queue):
-        while True:
-            data = queue.get()
-            if data is None:
-                break
-            queue.task_done()
-            return data
-
-    # writes data to write queue
-    def producer(self, queue, data):
-        while True:
-            # put data on queue
-            queue.put(data)
