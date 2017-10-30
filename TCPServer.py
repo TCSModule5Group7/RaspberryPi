@@ -29,13 +29,20 @@ class TCPServer(Thread):
         while self.running:
             received = self.client_socket.receive(1024)
             self.send(self, "received:" + received)
+            self.q_write.put(received)
 
     def shutdown(self):
         self.running = False
         self.client_socket.close()
         self.server_socket.close()
 
+
     def send(self, data):
-        self.client.socket.sendall(data)
+        while True:
+            data = self.q_read.get()
+            if data is None:
+                break
+            self.q_read.task_done()
+            self.client.socket.sendall(data)
 
 
