@@ -42,7 +42,6 @@ class SPIServer(Thread):
 
             self.q_write.task_done()
 
-
-def shutdown(self):
-    self.running = False
-    self.spi.close()
+    def shutdown(self):
+        self.running = False
+        self.spi.close()
