@@ -19,7 +19,7 @@ class TCPServer(Thread):
     def run(self):
         self.running = True
         self.await_client()
-        writer = Thread(self.write)
+        writer = Thread(target=self.write)
         writer.start()
         self.read()
 

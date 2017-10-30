@@ -17,7 +17,7 @@ class TCPClient(Thread):
     def run(self):
         self.running = True
         try:
-            writer = Thread(self.write)
+            writer = Thread(target=self.write)
             writer.start()
             self.read()
             writer.join()
