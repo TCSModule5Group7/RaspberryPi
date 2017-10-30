@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import Queue
 import sys
 
@@ -33,7 +34,7 @@ if __name__ == "__main__":
                     byte = int(byte, 16)
                     q_spi_write.put(byte)
                 except Queue.Full, Queue.Empty:
-                    continue
+                    pass
         else:
             Logger.error("Usage 'python Pong.py <HOST> <PORT>'")
     except KeyboardInterrupt:

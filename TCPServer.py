@@ -8,6 +8,7 @@ import Logger
 class TCPServer(Thread):
     def __init__(self, q_read, q_write, host, port):
         Thread.__init__(self)
+        print("Thread init")
         self.running = False
         self.q_read = q_read
         self.q_write = q_write
@@ -15,6 +16,7 @@ class TCPServer(Thread):
         self.server_socket.bind((host, port))
         self.client_socket = None
         self.client_address = None
+        print("TCPServer init")
 
     def run(self):
         self.running = True
@@ -34,7 +36,7 @@ class TCPServer(Thread):
                 self.q_write.task_done()
                 self.client_socket.sendall(line)
             except Queue.Empty:
-                continue
+                pass
 
     # Some code from https://www.experts-exchange.com/questions/22056190/Sockets-recv-function-on-a-new-line.html
     def read(self):
@@ -48,7 +50,7 @@ class TCPServer(Thread):
                     self.q_read.put(line)
                     Logger.logtcp("received: " + line)
             except Queue.Full:
-                continue
+                pass
 
     def shutdown(self):
         self.running = False

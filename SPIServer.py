@@ -38,7 +38,7 @@ class SPIServer(Thread):
                 try:
                     self.q_read.put(read_data[1], False)
                 except Queue.Full:
-                    continue
+                    pass
 
             self.q_write.task_done()
 
