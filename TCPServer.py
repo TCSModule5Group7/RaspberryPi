@@ -14,8 +14,7 @@ class TCPServer(Thread):
         self.q_write = q_write
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind((host, port))
-        self.client_socket = None
-        self.client_address = None
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print("TCPServer init")
 
     def run(self):
@@ -27,7 +26,7 @@ class TCPServer(Thread):
 
     def await_client(self):
         self.server_socket.listen(1)
-        self.client_socket, self.client_address = self.server_socket.accept()
+        self.client_socket, client_address = self.server_socket.accept()
 
     def write(self):
         while self.running:
