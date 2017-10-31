@@ -41,8 +41,6 @@ class SPIServer(Thread):
                 except Queue.Full:
                     pass
 
-            self.q_write.task_done()
-
     def shutdown(self):
         self.running = False
         self.spi.close()

@@ -33,7 +33,6 @@ class TCPServer(Thread):
         while self.running:
             try:
                 line = self.q_write.get()
-                self.q_write.task_done()
                 self.client_socket.sendall(line)
             except Queue.Empty:
                 pass
