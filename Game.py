@@ -143,14 +143,17 @@ class Game:
 class Connector:
 
     def __init__(self):
-        #try:
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.s.connect(("localhost", 420))
-        #except:
-            #print("Error: could not establish connection to server!")
+        try:
+            self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.s.connect(("localhost", 420))
+        except:
+            print("Error: could not establish connection to server!")
 
     def update(self,paddleL,paddleR,ballX,ballY,scoreL,scoreR):
-        self.s.send((str(paddleL)+"/"+str(paddleR)+"/"+str(ballX)+"/"+str(ballY)+"/"+str(scoreL)+"/"+str(scoreR)+"\n").encode())
+        try:
+            self.s.send((str(paddleL)+"/"+str(paddleR)+"/"+str(ballX)+"/"+str(ballY)+"/"+str(scoreL)+"/"+str(scoreR)+"\n").encode())
+        except:
+            print("Error: Could not send data")
 
 if __name__ == "__main__":
     Game()
