@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import Queue
 import sys
 
@@ -33,16 +34,16 @@ if __name__ == "__main__":
                     byte = int(byte, 16)
                     q_spi_write.put(byte)
                 except Queue.Full, Queue.Empty:
-                    continue
+                    pass
         else:
             Logger.error("Usage 'python Pong.py <HOST> <PORT>'")
     except KeyboardInterrupt:
         Logger.log("Received KeyboardInterrupt")
     finally:
-        Logger.logtcp("Shutting down tcp-server")
-        if tcp_server is not None:
-            tcp_server.shutdown()
         Logger.logspi("Shutting down spi-server")
         if spi_server is not None:
             spi_server.shutdown()
+        Logger.logtcp("Shutting down tcp-server")
+        if tcp_server is not None:
+            tcp_server.shutdown()
         Logger.log("Shutting down")
