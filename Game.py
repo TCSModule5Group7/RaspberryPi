@@ -4,6 +4,7 @@ import numpy as np
 import pygame
 from pygame.locals import *
 
+import socket
 
 class Field:
     WIDTH = 1080
@@ -58,7 +59,7 @@ class Entity:
                 # if y + self.y - self.height / 2 >= Field.HEIGHT: continue
                 # if x + self.x - self.width / 2 >= Field.WIDTH: continue
                 field.pixels[
-                    (x + self.x - self.width / 2) % Field.WIDTH, (y + self.y - self.height / 2) % Field.HEIGHT] = 255
+                    int((x + self.x - self.width / 2) % Field.WIDTH), int((y + self.y - self.height / 2) % Field.HEIGHT)] = 255
 
         return field.pixels
 
@@ -139,5 +140,17 @@ class Game:
         pygame.surfarray.blit_array(self.screen, pixels)
         pygame.display.flip()
 
+class Connector:
 
-Game()
+    def __init__(self):
+        #try:
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.connect(("localhost", 420))
+        #except:
+            #print("Error: could not establish connection to server!")
+
+    def update(self,paddleL,paddleR,ballX,ballY,scoreL,scoreR):
+        self.s.send((str(paddleL)+"/"+str(paddleR)+"/"+str(ballX)+"/"+str(ballY)+"/"+str(scoreL)+"/"+str(scoreR)+"\n").encode())
+
+if __name__ == "__main__":
+    Game()
