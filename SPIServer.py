@@ -17,8 +17,9 @@ class SPIServer(Thread):
         self.q_read = q_read
         self.q_write = q_write
         self.spi = spidev.SpiDev()
-        self.spi.mode = mode
         self.spi.open(bus, device)
+        self.spi.mode = mode
+        self.spi.max_speed_hz = 31200000
 
     def run(self):
         self.transfer()
@@ -39,8 +40,6 @@ class SPIServer(Thread):
                     self.q_read.put(read_data[1], False)
                 except Queue.Full:
                     pass
-
-            self.q_write.task_done()
 
     def shutdown(self):
         self.running = False
