@@ -107,11 +107,11 @@ class Tracker(Thread):
 
             # find contours in the mask and initialize the current
             # (x, y) center of the ball
-            cntsgreen = cv2.findContours(maskgreen.copy(), cv2.RETR_EXTERNAL,
+            (_,cntsgreen) = cv2.findContours(maskgreen.copy(), cv2.RETR_EXTERNAL,
                                          cv2.CHAIN_APPROX_SIMPLE)[-2]
             centergreen = None
 
-            cntsblue = cv2.findContours(maskblue.copy(), cv2.RETR_EXTERNAL,
+            (_,cntsblue) = cv2.findContours(maskblue.copy(), cv2.RETR_EXTERNAL,
                                         cv2.CHAIN_APPROX_SIMPLE)[-2]
             centerblue = None
 
