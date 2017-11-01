@@ -39,7 +39,7 @@ class Tracker(Thread):
         greenUpper = (64, 255, 255)
 
         # define lower and upper boundaries of blue
-        blueLower = (110, 100, 100)
+        blueLower = (100, 100, 100)
         blueUpper = (130, 255, 255)
 
         ptsgreen = deque([self.buffersize])
