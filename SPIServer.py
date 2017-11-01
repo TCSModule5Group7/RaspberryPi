@@ -1,4 +1,3 @@
-import Queue
 import spidev
 from threading import Thread
 
@@ -29,23 +28,16 @@ class SPIThread(Thread):
 
     def transfer(self):
         while self.running:
-            write_data = [NO_OPERATION, NO_DATA]
-            try:
+            if self.q_write.empty():
                 write_data = [TRANSFER, self.q_write.get(False)]
-                Logger.logspi("Found: " + hex(write_data[0]) + " " + hex(write_data[1]))
-            except Queue.Empty:
+            else:
                 write_data = [READ, NO_DATA]
                 write_data = [NO_OPERATION, NO_DATA]  # Temporary line to not overflow queues
-                Logger.logspi("Found: no data")
 
             read_data = self.spi.xfer2(write_data)
             Logger.logspi("Sent: " + hex(write_data[0]) + " " + hex(write_data[1]))
-            if read_data[0] == READ | read_data[0] == TRANSFER:
-                try:
-                    self.q_read.put(read_data[1], False)
-                    Logger.logspi("Received: " + hex(read_data[0]) + " " + hex(read_data[1]))
-                except Queue.Full:
-                    pass
+            if (read_data[0] == READ or read_data[0] == TRANSFER) and not self.q_read.full():
+                self.q_read.put(read_data[1], False)
 
     def shutdown(self):
         self.running = False
