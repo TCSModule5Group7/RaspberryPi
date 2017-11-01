@@ -1,6 +1,8 @@
 import Queue
 import SocketServer
 
+from threading import Thread
+
 import Logger
 
 
@@ -30,4 +32,6 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
         self.daemon_threads = True
         self.q_read = q_read
         self.q_write = q_write
+
+    def start(self):
         self.serve_forever()
