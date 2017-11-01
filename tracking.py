@@ -72,8 +72,8 @@ class Tracker(Thread):
                 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
                 # grab the raw NumPy array representing the image, then initialize the timestamp
                 # and occupied/unoccupied text
-                    image = frame.array
-                    (grabbed, frame) = image
+                    frame = frame.array
+
             else :
                 (grabbed, frame) = camera.read()
 
