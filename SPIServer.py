@@ -12,7 +12,7 @@ NO_OPERATION = 0b110000000
 NO_DATA = 0b00000000
 
 
-class SPIServer(Thread):
+class SPIThread(Thread):
     def __init__(self, q_read, q_write, mode, bus, device):
         Thread.__init__(self)
         self.running = False
@@ -24,10 +24,10 @@ class SPIServer(Thread):
         self.spi.max_speed_hz = 31200000
 
     def run(self):
+        self.running = True
         self.transfer()
 
     def transfer(self):
-        self.running = True
         while self.running:
             write_data = [NO_OPERATION, NO_DATA]
             try:
