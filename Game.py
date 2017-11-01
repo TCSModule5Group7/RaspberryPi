@@ -18,8 +18,8 @@ class Field:
 
         self.paddle1 = Paddle(100, 360)
         self.paddle2 = Paddle(980, 360)
-        self.bal = Bal(540, 360)
-        self.entities = [self.paddle1, self.paddle2, self.bal]
+        self.ball = Ball(540, 360)
+        self.entities = [self.paddle1, self.paddle2, self.ball]
 
         self.bal.start()
 
@@ -78,7 +78,7 @@ class Paddle(Entity):
             self.dy = 0
 
 
-class Bal(Entity):
+class Ball(Entity):
     def __init__(self, x, y):
         Entity.__init__(self, x, y, 40, 40)
 
@@ -109,6 +109,12 @@ class Game:
         self.k_up = self.k_down = 0
         self.field = Field(Field.WIDTH, Field.HEIGHT)
 
+        self.scoreL = 0
+        self.scoreR = 0
+
+        # connector to visualization
+        self.connector = Connector()
+
         # PyGame
         pygame.init()
         self.screen = pygame.display.set_mode((1080, 720))
@@ -134,6 +140,14 @@ class Game:
 
         # Update the field
         self.field.update(0, self.k_up + self.k_down)
+
+        # update remote visuals
+        self.connector.update(self.field.paddle1.y/Field.HEIGHT,
+                              self.field.paddle2.y/Field.HEIGHT,
+                              self.field.ball.x/Field.WIDTH,
+                              self.field.ball.y/Field.HEIGHT,
+                              0,0)
+
 
         # Render
         pixels = self.field.render()
