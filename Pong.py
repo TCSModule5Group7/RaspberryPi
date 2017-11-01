@@ -67,8 +67,8 @@ if __name__ == "__main__":
                         q_spi_write.put(byte)
         else:
             Logger.logerror("Usage 'python Pong.py <HOST> <PORT>'")
-    except Exception as e:
-        Logger.logerror(e.message)
+    except KeyboardInterrupt:
+        pass
     finally:
 
         if useSPI:
