@@ -28,7 +28,7 @@ class SPIThread(Thread):
 
     def transfer(self):
         while self.running:
-            if self.q_write.empty():
+            if not self.q_write.empty():
                 write_data = [TRANSFER, self.q_write.get(False)]
             else:
                 write_data = [READ, NO_DATA]
