@@ -25,19 +25,19 @@ class TCPClient(Thread):
             Logger.log("Received KeyboardInterrupt")
         finally:
             self.running = False
-            socket.close()
+            self.socket.close()
 
     def write(self):
         while self.running:
             line = raw_input(">")
-            socket.sendall(line)
+            self.socket.sendall(line)
             Logger.logtcp("Sent: " + line)
 
     # Some code from https://www.experts-exchange.com/questions/22056190/Sockets-recv-function-on-a-new-line.html
     def read(self):
         data = ""
         while self.running:
-            received = socket.receive(1024)
+            received = self.socket.recv(1024)
             data += received
             if "\n" in data:
                 line, data = data.split("\n", 1)
