@@ -17,5 +17,5 @@ def logtcp(message):
     print(ansiGreen + "[tcp]" + message + ansiEnd)
 
 
-def error(message):
+def logerror(message):
     print(ansiRed + "[error]" + message + ansiEnd)
