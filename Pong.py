@@ -2,13 +2,13 @@
 import Queue
 import sys
 
+import Logger
+
 ###########################
 
 useSPI = False
 
 ###########################
-
-import Logger
 
 if useSPI:
     from SPIServer import SPIServer
@@ -40,7 +40,7 @@ if __name__ == "__main__":
                 spi_server = SPIServer(q_spi_read, q_spi_write, 0b00, 0, 0)
 
             Logger.logtcp("Initializing tcp-server")
-            tcp_server = ThreadedTCPServer(host,port,q_tcp_read, q_tcp_write)
+            tcp_server = ThreadedTCPServer(host, port, q_tcp_read, q_tcp_write)
 
             if useSPI:
                 Logger.logspi("Starting spi-server")

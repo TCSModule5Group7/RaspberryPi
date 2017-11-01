@@ -28,6 +28,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     def __init__(self, host, port, q_read, q_write):
         SocketServer.TCPServer.__init__(self, (host, port), ClientHandler)
+        self.daemon_threads = True
         self.q_read = q_read
         self.q_write = q_write
         self.serve_forever()
