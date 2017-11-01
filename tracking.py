@@ -35,7 +35,7 @@ class Tracker(Thread):
         # define the lower and upper boundaries of the "green"
         # ball in the HSV color space, then initialize the
         # list of tracked points
-
+        pi = False
 
         greenLower = (29, 86, 6)
         greenUpper = (64, 255, 255)
@@ -59,6 +59,7 @@ class Tracker(Thread):
             time.sleep(0.1)
         elif not self.campath:
             camera = cv2.VideoCapture(0)
+
 
         # otherwise, grab a reference to the video file
         else:
