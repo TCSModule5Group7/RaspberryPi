@@ -4,7 +4,7 @@ import sys
 
 import Logger
 from SPIServer import SPIServer
-from TCPServer import TCPServer
+from TCPServer import ThreadedTCPServer
 
 if __name__ == "__main__":
     tcp_server = None
@@ -22,7 +22,7 @@ if __name__ == "__main__":
             Logger.logspi("Initializing spi-server")
             spi_server = SPIServer(q_spi_read, q_spi_write, 0b00, 0, 0)
             Logger.logtcp("Initializing tcp-server")
-            tcp_server = TCPServer(q_tcp_read, q_tcp_write, host, port)
+            tcp_server = ThreadedTCPServer(host,port,q_tcp_read, q_tcp_write)
             Logger.logspi("Starting spi-server")
             spi_server.start()
             Logger.logtcp("Starting tcp-server")
@@ -36,13 +36,13 @@ if __name__ == "__main__":
                 except Queue.Full, Queue.Empty:
                     pass
         else:
-            Logger.error("Usage 'python Pong.py <HOST> <PORT>'")
+            Logger.logerror("Usage 'python Pong.py <HOST> <PORT>'")
     except KeyboardInterrupt:
         Logger.log("Received KeyboardInterrupt")
     finally:
         Logger.logspi("Shutting down spi-server")
         if spi_server is not None:
-            spi_server.shutdown()
+           spi_server.shutdown()
         Logger.logtcp("Shutting down tcp-server")
         if tcp_server is not None:
             tcp_server.shutdown()

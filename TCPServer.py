@@ -2,7 +2,47 @@ import Queue
 import socket
 from threading import Thread
 
+import SocketServer
+
 import Logger
+
+class ClientHandler(SocketServer.BaseRequestHandler):
+    def handle(self):
+        line = ""
+        data = ""
+
+        while line != "quit":
+                received = self.request.recv(1024)
+                data += received
+                if "\n" in data:
+                    line, data = data.split("\n", 1)
+                    Logger.logtcp("received: " + line)
+                    try:
+                        self.server.q_read.put(line,False)
+                    except Queue.Full:
+                        pass
+
+                    self.request.send(line.upper() + "\n")
+        self.request.close()
+
+class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+    def __init__(self,host,port,q_read,q_write):
+        SocketServer.TCPServer.__init__(self,(host,port), ClientHandler)
+        self.q_read = q_read
+        self.q_write = q_write
+        self.serve_forever()
+
+if __name__ == "__main__":
+    HOST, PORT = "localhost", 9998
+
+    # Create the server, binding to localhost on port 9999
+    server = ThreadedTCPServer((HOST, PORT), ClientHandler)
+
+    # Activate the server; this will keep running until you
+    # interrupt the program with Ctrl-C
+    server.serve_forever()
+
+#####################################################################################################
 
 
 class TCPServer(Thread):
