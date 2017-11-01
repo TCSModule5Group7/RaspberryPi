@@ -35,7 +35,6 @@ class SPIThread(Thread):
                 write_data = [NO_OPERATION, NO_DATA]  # Temporary line to not overflow queues
 
             read_data = self.spi.xfer2(write_data)
-            Logger.logspi("Sent: " + hex(write_data[0]) + " " + hex(write_data[1]))
             if (read_data[0] == READ or read_data[0] == TRANSFER) and not self.q_read.full():
                 self.q_read.put(read_data[1], False)
 
