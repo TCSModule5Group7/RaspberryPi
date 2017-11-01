@@ -5,7 +5,10 @@
 # import the necessary packages
 from collections import deque
 from threading import Thread
+from picamera.array import PiRGBArray
+from picamera import PiCamera
 import numpy as np
+import time
 import argparse
 import imutils
 import cv2
@@ -24,7 +27,6 @@ class Tracker(Thread):
     def exit_handler(self, camera):
         camera.release()
         cv2.destroyAllWindows()
-
 
     def run(self):
         self.track()
@@ -47,7 +49,15 @@ class Tracker(Thread):
 
         # if a video path was not supplied, grab the reference
         # to the webcam
-        if not self.campath:
+        if self.campath == "pi":
+            camera = PiCamera()
+            camera.resolution = (640, 480)
+            camera.framerate = 32
+
+            rawCapture = PiRGBArray(camera, size=(640, 480))
+            pi = True
+            time.sleep(0.1)
+        elif not self.campath:
             camera = cv2.VideoCapture(0)
 
         # otherwise, grab a reference to the video file
@@ -57,7 +67,14 @@ class Tracker(Thread):
         # keep looping
         while True:
             # grab the current frame
-            (grabbed, frame) = camera.read()
+            if pi == True:
+                for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+                # grab the raw NumPy array representing the image, then initialize the timestamp
+                # and occupied/unoccupied text
+                    image = frame.array
+                    (grabbed, frame) = image
+            else :
+                (grabbed, frame) = camera.read()
 
             # if we are viewing a video and we did not grab a frame,
             # then we have reached the end of the video
@@ -87,15 +104,14 @@ class Tracker(Thread):
             maskblue = cv2.erode(maskblue, None, iterations=2)
             maskblue = cv2.dilate(maskblue, None, iterations=2)
 
-
             # find contours in the mask and initialize the current
             # (x, y) center of the ball
             cntsgreen = cv2.findContours(maskgreen.copy(), cv2.RETR_EXTERNAL,
-                                        cv2.CHAIN_APPROX_SIMPLE)[-2]
+                                         cv2.CHAIN_APPROX_SIMPLE)[-2]
             centergreen = None
 
             cntsblue = cv2.findContours(maskblue.copy(), cv2.RETR_EXTERNAL,
-                                         cv2.CHAIN_APPROX_SIMPLE)[-2]
+                                        cv2.CHAIN_APPROX_SIMPLE)[-2]
             centerblue = None
 
             # only proceed if at least one contour was found
@@ -142,7 +158,6 @@ class Tracker(Thread):
             ptsblue.appendleft(centerblue)
             self.q_read_blue.put(centerblue)
 
-
             # loop over the set of tracked points
             for i in xrange(1, len(ptsgreen)):
                 # if either of the tracked points are None, ignore
@@ -170,8 +185,11 @@ class Tracker(Thread):
             mask = maskblue + maskgreen
             res = cv2.bitwise_and(framegreen, frameblue, mask)
             cv2.imshow("frame", res)
-            #cv2.imshow("Frameblue", frameblue)
+            # cv2.imshow("Frameblue", frameblue)
             key = cv2.waitKey(1) & 0xFF
+
+            if pi == True:
+                rawCapture.truncate(0)
 
             # if the 'q' key is pressed, stop the loop
             if key == ord("q"):
