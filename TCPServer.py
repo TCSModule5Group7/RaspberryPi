@@ -30,7 +30,6 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
         self.daemon_threads = True
         self.q_read = q_read
         self.q_write = q_write
-        self.daemons_thread = True
         self.serve_forever()
 
 #####################################################################################################
