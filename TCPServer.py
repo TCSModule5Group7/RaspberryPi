@@ -1,10 +1,8 @@
 import Queue
-import socket
-from threading import Thread
-
 import SocketServer
 
 import Logger
+
 
 class ClientHandler(SocketServer.BaseRequestHandler):
     def handle(self):
@@ -12,26 +10,28 @@ class ClientHandler(SocketServer.BaseRequestHandler):
         data = ""
 
         while line != "quit":
-                received = self.request.recv(1024)
-                data += received
-                if "\n" in data:
-                    line, data = data.split("\n", 1)
-                    Logger.logtcp("received: " + line)
-                    try:
-                        self.server.q_read.put(line,False)
-                    except Queue.Full:
-                        print "queue full"
-                        pass
+            received = self.request.recv(1024)
+            data += received
+            if "\n" in data:
+                line, data = data.split("\n", 1)
+                Logger.logtcp("received: " + line)
+                try:
+                    self.server.q_read.put(line, False)
+                except Queue.Full:
+                    Logger.logtcp("Queue is full")
+                    pass
 
-                    self.request.send(line.upper() + "\n")
+                self.request.send(line.upper() + "\n")
         self.request.close()
 
+
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
-    def __init__(self,host,port,q_read,q_write):
-        SocketServer.TCPServer.__init__(self,(host,port), ClientHandler)
+    def __init__(self, host, port, q_read, q_write):
+        SocketServer.TCPServer.__init__(self, (host, port), ClientHandler)
         self.q_read = q_read
         self.q_write = q_write
         self.serve_forever()
+
 
 if __name__ == "__main__":
     HOST, PORT = "localhost", 9998

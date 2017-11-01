@@ -2,6 +2,8 @@ import Queue
 import spidev
 from threading import Thread
 
+import Logger
+
 TRANSFER = 0b00000000
 READ = 0b10000000
 WRITE = 0b01000000
@@ -30,14 +32,18 @@ class SPIServer(Thread):
             write_data = [NO_OPERATION, NO_DATA]
             try:
                 write_data = [TRANSFER, self.q_write.get(False)]
+                Logger.logspi("Found: " + hex(write_data[0]) + " " + hex(write_data[1]))
             except Queue.Empty:
                 write_data = [READ, NO_DATA]
                 write_data = [NO_OPERATION, NO_DATA]  # Temporary line to not overflow queues
+                Logger.logspi("Found: no data")
 
             read_data = self.spi.xfer2(write_data)
+            Logger.logspi("Sent: " + hex(write_data[0]) + " " + hex(write_data[1]))
             if read_data[0] == READ | read_data[0] == TRANSFER:
                 try:
                     self.q_read.put(read_data[1], False)
+                    Logger.logspi("Received: " + hex(read_data[0]) + " " + hex(read_data[1]))
                 except Queue.Full:
                     pass
 
