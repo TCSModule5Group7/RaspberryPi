@@ -20,6 +20,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                     try:
                         self.server.q_read.put(line,False)
                     except Queue.Full:
+                        print "queue full"
                         pass
 
                     self.request.send(line.upper() + "\n")

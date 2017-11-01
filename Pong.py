@@ -2,29 +2,50 @@
 import Queue
 import sys
 
+###########################
+
+useSPI = False
+
+###########################
+
 import Logger
-from SPIServer import SPIServer
+
+if useSPI:
+    from SPIServer import SPIServer
+
 from TCPServer import ThreadedTCPServer
 
 if __name__ == "__main__":
     tcp_server = None
-    spi_server = None
+
+    if useSPI:
+        spi_server = None
+
     try:
         if len(sys.argv) == 3:
             Logger.log("Initializing variables")
             host = sys.argv[1]
             port = int(sys.argv[2])
             Logger.log("Initializing queues")
-            q_spi_read = Queue.Queue()  # Stores data read from the spi interface
-            q_spi_write = Queue.Queue()  # Stores data to be written to the spi interface
+
+            if useSPI:
+                q_spi_read = Queue.Queue()  # Stores data read from the spi interface
+                q_spi_write = Queue.Queue()  # Stores data to be written to the spi interface
+
             q_tcp_read = Queue.Queue()  # Stores data read from the tcp interface
             q_tcp_write = Queue.Queue()  # Stores data to be written to the tcp interface
-            Logger.logspi("Initializing spi-server")
-            spi_server = SPIServer(q_spi_read, q_spi_write, 0b00, 0, 0)
+
+            if useSPI:
+                Logger.logspi("Initializing spi-server")
+                spi_server = SPIServer(q_spi_read, q_spi_write, 0b00, 0, 0)
+
             Logger.logtcp("Initializing tcp-server")
             tcp_server = ThreadedTCPServer(host,port,q_tcp_read, q_tcp_write)
-            Logger.logspi("Starting spi-server")
-            spi_server.start()
+
+            if useSPI:
+                Logger.logspi("Starting spi-server")
+                spi_server.start()
+
             Logger.logtcp("Starting tcp-server")
             tcp_server.start()
             # Test code to just forward tcp to spi
@@ -32,7 +53,10 @@ if __name__ == "__main__":
                 try:
                     byte = q_tcp_read.get(False)
                     byte = int(byte, 16)
-                    q_spi_write.put(byte)
+
+                    if useSPI:
+                        q_spi_write.put(byte)
+
                 except Queue.Full, Queue.Empty:
                     pass
         else:
@@ -40,9 +64,12 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         Logger.log("Received KeyboardInterrupt")
     finally:
-        Logger.logspi("Shutting down spi-server")
-        if spi_server is not None:
-           spi_server.shutdown()
+
+        if useSPI:
+            Logger.logspi("Shutting down spi-server")
+            if spi_server is not None:
+                spi_server.shutdown()
+
         Logger.logtcp("Shutting down tcp-server")
         if tcp_server is not None:
             tcp_server.shutdown()
