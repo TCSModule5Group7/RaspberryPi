@@ -1,4 +1,5 @@
 import sys
+import random
 
 import numpy as np
 import pygame
@@ -21,7 +22,10 @@ class Field:
         self.ball = Ball(540, 360)
         self.entities = [self.paddle1, self.paddle2, self.ball]
 
-        self.bal.start()
+        self.scoreL = 0
+        self.scoreR = 0
+
+        self.ball.start()
 
     def update(self, dx, dy):
         self.paddle1.move(Field.ACCELERATION * dx, Field.ACCELERATION * dy)
@@ -89,6 +93,18 @@ class Ball(Entity):
     def update(self, field):
         for entity in field.entities:
             if entity == self: continue
+            if self.x <= self.width / 2:
+                field.scoreR += 1
+                self.x = (Field.WIDTH + self.width) / 2
+                self.y = (Field.HEIGHT + self.height) / 2
+                self.dx *= -1 if random.choice([True,False]) else 1
+                self.dy *= -1 if random.choice([True,False]) else 1
+            if self.x >= Field.WIDTH - self.width / 2:
+                field.scoreL += 1
+                self.x = (Field.WIDTH + self.width) / 2
+                self.y = (Field.HEIGHT + self.height) / 2
+                self.dx *= -1 if random.choice([True, False]) else 1
+                self.dy *= -1 if random.choice([True, False]) else 1
             if abs(entity.x - self.x) * 2 < (entity.width + self.width) and abs(entity.y - self.y) * 2 < (
                         entity.height + self.height):
                 self.dx *= -1
@@ -97,6 +113,7 @@ class Ball(Entity):
                 self.dx *= -1
             if self.y + self.height / 2 >= Field.HEIGHT or self.y - self.height / 2 <= 0:
                 self.dy *= -1
+
 
             self.x += self.dx
             self.y += self.dy
@@ -108,9 +125,6 @@ class Game:
     def __init__(self):
         self.k_up = self.k_down = 0
         self.field = Field(Field.WIDTH, Field.HEIGHT)
-
-        self.scoreL = 0
-        self.scoreR = 0
 
         # connector to visualization
         self.connector = Connector()
@@ -146,7 +160,8 @@ class Game:
                               self.field.paddle2.y/Field.HEIGHT,
                               self.field.ball.x/Field.WIDTH,
                               self.field.ball.y/Field.HEIGHT,
-                              0,0)
+                              self.field.scoreL,
+                              self.field.scoreR)
 
 
         # Render
