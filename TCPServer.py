@@ -1,28 +1,31 @@
 import Queue
+import socket
+from threading import Thread
+
 import SocketServer
 
 import Logger
-
 
 class ClientHandler(SocketServer.BaseRequestHandler):
     def handle(self):
         line = ""
         data = ""
+        running = True
 
-        while line != "quit":
-            received = self.request.recv(1024)
-            data += received
-            if "\n" in data:
-                line, data = data.split("\n", 1)
-                Logger.logtcp("received: " + line)
-                try:
-                    self.server.q_read.put(line, False)
-                except Queue.Full:
-                    Logger.logtcp("Queue is full")
-                    pass
+        while running:
+                received = self.request.recv(1024)
+                data += received
+                if "\n" in data:
+                    line, data = data.split("\n", 1)
+                    Logger.logtcp("received: " + line)
+                    try:
+                        self.server.q_read.put(line,False)
+                    except Queue.Full:
+                        Logger.logtcp("Queue is full")
 
-                self.request.send(line.upper() + "\n")
+                self.request.send("received\n")
         self.request.close()
+        Logger.logtcp("Client disconnected")
 
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
@@ -31,18 +34,8 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
         self.daemon_threads = True
         self.q_read = q_read
         self.q_write = q_write
+        self.daemons_thread = True
         self.serve_forever()
-
-
-if __name__ == "__main__":
-    HOST, PORT = "localhost", 9998
-
-    # Create the server, binding to localhost on port 9999
-    server = ThreadedTCPServer((HOST, PORT), ClientHandler)
-
-    # Activate the server; this will keep running until you
-    # interrupt the program with Ctrl-C
-    server.serve_forever()
 
 #####################################################################################################
 # class TCPServer(Thread):
