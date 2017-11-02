@@ -23,8 +23,8 @@ class GameThread(Thread):
 
     def run(self):
         import re
-        binary = re.compile("0b[01]{8}?")
-        hexadecimal = re.compile("0x[0123456789abcdefABCDEF]{2}?")
+        binary = re.compile("^0b[01]{8}$")
+        hexadecimal = re.compile("^0x[0-9a-fA-F]{2}$")
         self.running = True
         while self.running:
             if not q_tcp_read.empty():
