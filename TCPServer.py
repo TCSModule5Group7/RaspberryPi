@@ -29,8 +29,8 @@ class ClientHandler(BaseRequestHandler):
             data += received
             if "\n" in data:
                 line, data = data.split("\n", 1)
-                Logger.log_tcp("Received: '" + line + "'")
-                self.request.send("Received\n")
+                Logger.log_tcp("rcv: '" + line + "'")
+                self.request.send("rcv\n")
                 if line == "quit":
                     running = False
 

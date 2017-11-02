@@ -34,11 +34,11 @@ class SPIThread(Thread):
             read_data = self.spi.xfer2(write_data)
             if not self.q_read.full():
                 if write_data[0] == TRANSFER:
-                    Logger.log_spi("Sent: '" + hex(write_data[0]) + "|" + hex(write_data[1]) + "'")
-                    Logger.log_spi("Received: '" + hex(read_data[0]) + "|" + hex(read_data[1]) + "'")
+                    Logger.log_spi("snd: '" + hex(write_data[0]) + "|" + hex(write_data[1]) + "'")
+                    Logger.log_spi("rcv: '" + hex(read_data[0]) + "|" + hex(read_data[1]) + "'")
                     self.q_read.put(read_data[1], False)
                 elif write_data[0] == READ:
-                    Logger.log_spi("Received: '" + hex(read_data[0]) + "|" + hex(read_data[1]) + "'")
+                    Logger.log_spi("rcv: '" + hex(read_data[0]) + "|" + hex(read_data[1]) + "'")
                     self.q_read.put(read_data[1], False)
 
     def shutdown(self):
