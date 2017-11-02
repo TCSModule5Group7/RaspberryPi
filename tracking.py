@@ -55,10 +55,11 @@ class Tracker(Thread):
             camera = PiCamera()
             camera.resolution = (640, 480)
             camera.framerate = 32
-
+            print("picam selected")
             rawCapture = PiRGBArray(camera, size=(640, 480))
             pi = True
             time.sleep(0.1)
+            print("picam setup")
         elif not self.campath:
             camera = cv2.VideoCapture(0)
 
@@ -67,15 +68,17 @@ class Tracker(Thread):
         else:
             camera = cv2.VideoCapture(self.campath)
 
-        camera.isOpened()
+
         # keep looping
         while True:
+            print("entering loop")
             # grab the current frame
             if pi == True:
                 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
                     # grab the raw NumPy array representing the image, then initialize the timestamp
                     # and occupied/unoccupied text
                     frame = frame.array
+                    print("frame")
                     rawCapture.truncate(0)
 
             else:
@@ -109,7 +112,7 @@ class Tracker(Thread):
             maskblue = cv2.inRange(hsvblue, blueLower, blueUpper)
             maskblue = cv2.erode(maskblue, None, iterations=2)
             maskblue = cv2.dilate(maskblue, None, iterations=2)
-
+            print("frames and masks active")
             # find contours in the mask and initialize the current
             # (x, y) center of the ball
             cntsgreen = cv2.findContours(maskgreen.copy(), cv2.RETR_EXTERNAL,
@@ -162,6 +165,7 @@ class Tracker(Thread):
 
             # update the points queue
             ptsblue.appendleft(centerblue)
+            print("passing coordinates to queue")
             self.q_read_blue.put(centerblue)
 
             # loop over the set of tracked points
@@ -188,6 +192,7 @@ class Tracker(Thread):
                 cv2.line(frameblue, ptsblue[i - 1], ptsblue[i], (0, 0, 255), thickness)
 
             # show the frame to our screen
+            print("putting it all together")
             mask = maskblue + maskgreen
             res = cv2.bitwise_and(framegreen, frameblue, mask)
             cv2.imshow("frame", res)
