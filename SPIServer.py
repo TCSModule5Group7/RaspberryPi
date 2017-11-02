@@ -40,7 +40,7 @@ class SPIThread(Thread):
                 elif write_data[0] == READ:
                     Logger.log_spi("rcv: '" + hex(read_data[0]) + "|" + hex(read_data[1]) + "'")
                     self.q_read.put(read_data[1], False)
+        self.spi.close()
 
     def shutdown(self):
         self.running = False
-        self.spi.close()
