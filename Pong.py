@@ -132,7 +132,7 @@ if __name__ == "__main__":
             raise socket_error
 
     except KeyboardInterrupt:
-        pass
+        Logger.log("Received KeyboardInterrupt")
 
     finally:
         Logger.log_game("Shutting down game")
