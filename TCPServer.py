@@ -11,10 +11,10 @@ class TCPThread(Thread):
 
     def run(self):
         self.tcp_server.serve_forever()
-        self.tcp_server.server_close()
 
     def shutdown(self):
         self.tcp_server.shutdown()
+        self.tcp_server.server_close()
 
 
 class ClientHandler(BaseRequestHandler):
