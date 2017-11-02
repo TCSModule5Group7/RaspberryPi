@@ -1,12 +1,12 @@
 #!/usr/bin/python
-from errno import EADDRINUSE
-from sys import argv
 from Queue import Queue
+from errno import EADDRINUSE
 from socket import error
+from sys import argv
 from threading import Thread
 
 import Logger
-from TCPServer import ThreadedTCPServer
+from TCPServer import TCPThread
 
 # Switch to disable or enable the SPIServer
 useSPI = False
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     if useSPI:
         spi_thread = None
 
-    tcp_server = None
+    tcp_thread = None
 
     game_thread = None
 
@@ -87,8 +87,7 @@ if __name__ == "__main__":
         Logger.log_tcp("Initializing tcp-server with: " +
                        "[host:" + str(host) + "] [port:" + str(port) + "]")
 
-        tcp_server = ThreadedTCPServer(host, port, q_tcp_read, q_tcp_write)
-        tcp_thread = Thread(target=tcp_server.serve_forever)
+        tcp_thread = TCPThread(host, port, q_tcp_read, q_tcp_write)
 
         Logger.log_tcp("Initialized tcp-server with:" +
                        "[host:" + str(host) + "] [port:" + str(port) + "]")
@@ -142,9 +141,8 @@ if __name__ == "__main__":
         Logger.log_game("Shut down game")
 
         Logger.log_tcp("Shutting down tcp-server")
-        if tcp_server is not None:
-            tcp_server.shutdown()
-            tcp_server.server_close()
+        if tcp_thread is not None:
+            tcp_thread.shutdown()
         Logger.log_tcp("Shut down tcp-server")
 
         if useSPI:

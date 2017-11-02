@@ -1,6 +1,20 @@
 from SocketServer import ThreadingTCPServer, BaseRequestHandler
+from threading import Thread
 
 import Logger
+
+
+class TCPThread(Thread):
+    def __init__(self, host, port, q_read, q_write):
+        Thread.__init__(self)
+        self.tcp_server = ThreadedTCPServer(host, port, q_read, q_write)
+
+    def run(self):
+        self.tcp_server.serve_forever()
+
+    def shutdown(self):
+        self.tcp_server.shutdown()
+        self.tcp_server.server_close()
 
 
 class ClientHandler(BaseRequestHandler):
