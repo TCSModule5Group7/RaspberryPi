@@ -6,12 +6,12 @@ import numpy as np
 import pygame
 from pygame.locals import *
 
-import game.physics.Collision as collision
-from Bal import Bal
+import physics.Collision as collision
+from Ball import Ball
 from Paddle import Paddle
 from Wall import Wall
-from game.physics.Manifold import Manifold
-from game.physics.Vec2 import Vec2
+from physics.Manifold import Manifold
+from physics.Vec2 import Vec2
 
 ACCELERATION = 10
 BALL_SPEED = 10
@@ -28,7 +28,7 @@ class Game:
 
         self.paddle1 = Paddle(100, 360)
         self.paddle2 = Paddle(980, 360)
-        self.bal = Bal(920, 360)
+        self.bal = Ball(920, 360)
         self.bal.velocity = Vec2(-1, -1)
         self.wall_north = Wall(540, 0, 1080, 20)
         self.wall_east = Wall(1080, 360, 20, 720)

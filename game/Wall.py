@@ -1,6 +1,6 @@
-from game.physics.AABB import AABB
-from game.physics.Entity import Entity
-from game.physics.Vec2 import Vec2
+from physics.AABB import AABB
+from physics.Entity import Entity
+from physics.Vec2 import Vec2
 
 
 class Wall(Entity):

@@ -5,8 +5,8 @@
 # import the necessary packages
 from collections import deque
 from threading import Thread
-#from picamera.array import PiRGBArray
-#from picamera import PiCamera
+# from picamera.array import PiRGBArray
+# from picamera import PiCamera
 import numpy as np
 import time
 import argparse
@@ -27,6 +27,8 @@ class Tracker(Thread):
     def exit_handler(self, camera):
         camera.release()
         cv2.destroyAllWindows()
+
+
 
     def run(self):
         self.track()
@@ -53,10 +55,11 @@ class Tracker(Thread):
             camera = PiCamera()
             camera.resolution = (640, 480)
             camera.framerate = 32
-
+            print("picam selected")
             rawCapture = PiRGBArray(camera, size=(640, 480))
             pi = True
             time.sleep(0.1)
+            print("picam setup")
         elif not self.campath:
             camera = cv2.VideoCapture(0)
 
@@ -65,22 +68,26 @@ class Tracker(Thread):
         else:
             camera = cv2.VideoCapture(self.campath)
 
+
         # keep looping
         while True:
+            print("entering loop")
             # grab the current frame
             if pi == True:
                 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-                # grab the raw NumPy array representing the image, then initialize the timestamp
-                # and occupied/unoccupied text
+                    # grab the raw NumPy array representing the image, then initialize the timestamp
+                    # and occupied/unoccupied text
                     frame = frame.array
+                    print("frame")
                     rawCapture.truncate(0)
 
-            else :
+            else:
                 (grabbed, frame) = camera.read()
 
             # if we are viewing a video and we did not grab a frame,
             # then we have reached the end of the video
             if self.campath and not grabbed:
+                print("not grabbed")
                 break
 
             # resize the frame, blur it, and convert it to the HSV
@@ -105,7 +112,7 @@ class Tracker(Thread):
             maskblue = cv2.inRange(hsvblue, blueLower, blueUpper)
             maskblue = cv2.erode(maskblue, None, iterations=2)
             maskblue = cv2.dilate(maskblue, None, iterations=2)
-
+            print("frames and masks active")
             # find contours in the mask and initialize the current
             # (x, y) center of the ball
             cntsgreen = cv2.findContours(maskgreen.copy(), cv2.RETR_EXTERNAL,
@@ -158,6 +165,7 @@ class Tracker(Thread):
 
             # update the points queue
             ptsblue.appendleft(centerblue)
+            print("passing coordinates to queue")
             self.q_read_blue.put(centerblue)
 
             # loop over the set of tracked points
@@ -184,14 +192,15 @@ class Tracker(Thread):
                 cv2.line(frameblue, ptsblue[i - 1], ptsblue[i], (0, 0, 255), thickness)
 
             # show the frame to our screen
+            print("putting it all together")
             mask = maskblue + maskgreen
             res = cv2.bitwise_and(framegreen, frameblue, mask)
             cv2.imshow("frame", res)
             # cv2.imshow("Frameblue", frameblue)
             key = cv2.waitKey(1) & 0xFF
 
-            #if pi == True:
-                #rawCapture.truncate(0)
+            # if pi == True:
+            # rawCapture.truncate(0)
 
             # if the 'q' key is pressed, stop the loop
             if key == ord("q"):
