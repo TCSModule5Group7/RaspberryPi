@@ -1,6 +1,8 @@
 import spidev
 from threading import Thread
 
+import Logger
+
 TRANSFER = 0b00000000
 READ = 0b10000000
 WRITE = 0b01000000
@@ -30,8 +32,14 @@ class SPIThread(Thread):
                 write_data = [NO_OPERATION, NO_DATA]  # Temporary line to not overflow queues
 
             read_data = self.spi.xfer2(write_data)
-            if (read_data[0] == READ or read_data[0] == TRANSFER) and not self.q_read.full():
-                self.q_read.put(read_data[1], False)
+            if not self.q_read.full():
+                if read_data[0] == TRANSFER:
+                    Logger.log_spi("Sent: '" + hex(write_data[0]) + "|" + hex(write_data[1]) + "'")
+                    Logger.log_spi("Received: '" + (read_data[0]) + "|" + hex(read_data[1]) + "'")
+                    self.q_read.put(read_data[1], False)
+                elif read_data[0] == READ:
+                    Logger.log_spi("Received: '" + (read_data[0]) + "|" + hex(read_data[1]) + "'")
+                    self.q_read.put(read_data[1], False)
 
     def shutdown(self):
         self.running = False
