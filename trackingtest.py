@@ -25,7 +25,6 @@ class TrackingTest(Thread):
         listener = Thread(target=self.listen)
         listener.start()
         #self.tracker.join()
-
         self.tracker.start()
 
         atexit.register(self.exit_handler(listener))

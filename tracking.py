@@ -5,8 +5,8 @@
 # import the necessary packages
 from collections import deque
 from threading import Thread
-#from picamera.array import PiRGBArray
-#from picamera import PiCamera
+# from picamera.array import PiRGBArray
+# from picamera import PiCamera
 import numpy as np
 import time
 import argparse
@@ -27,6 +27,8 @@ class Tracker(Thread):
     def exit_handler(self, camera):
         camera.release()
         cv2.destroyAllWindows()
+
+
 
     def run(self):
         self.track()
@@ -65,22 +67,24 @@ class Tracker(Thread):
         else:
             camera = cv2.VideoCapture(self.campath)
 
+        camera.isOpened()
         # keep looping
         while True:
             # grab the current frame
             if pi == True:
                 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-                # grab the raw NumPy array representing the image, then initialize the timestamp
-                # and occupied/unoccupied text
+                    # grab the raw NumPy array representing the image, then initialize the timestamp
+                    # and occupied/unoccupied text
                     frame = frame.array
                     rawCapture.truncate(0)
 
-            else :
+            else:
                 (grabbed, frame) = camera.read()
 
             # if we are viewing a video and we did not grab a frame,
             # then we have reached the end of the video
             if self.campath and not grabbed:
+                print("not grabbed")
                 break
 
             # resize the frame, blur it, and convert it to the HSV
@@ -190,8 +194,8 @@ class Tracker(Thread):
             # cv2.imshow("Frameblue", frameblue)
             key = cv2.waitKey(1) & 0xFF
 
-            #if pi == True:
-                #rawCapture.truncate(0)
+            # if pi == True:
+            # rawCapture.truncate(0)
 
             # if the 'q' key is pressed, stop the loop
             if key == ord("q"):
