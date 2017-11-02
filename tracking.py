@@ -158,6 +158,8 @@ class Tracker(Thread):
                         print("passing coordinates to queue")
                         self.q_read_blue.put(centerblue)
 
+                        """THIS IS FOR SHOWING THE OBJECT TRACKING IN A WINDOW, NOT NEEDED WITH THE PI"""
+                        """                       
                         # loop over the set of tracked points
                         for i in xrange(1, len(ptsgreen)):
                             # if either of the tracked points are None, ignore
@@ -186,15 +188,16 @@ class Tracker(Thread):
                         mask = maskblue + maskgreen
                         res = cv2.bitwise_and(framegreen, frameblue, mask)
                         cv2.imshow("frame", res)
-                        # cv2.imshow("Frameblue", frameblue)
+                         cv2.imshow("Frameblue", frameblue)
                         key = cv2.waitKey(1) & 0xFF
-
+                        """
                         # if pi == True:
-                        # rawCapture.truncate(0)
+                        rawCapture.truncate(0)
 
-                        # if the 'q' key is pressed, stop the loop
+                        """
+                         if the 'q' key is pressed, stop the loop
                         if key == ord("q"):
-                            break
+                            break"""
 
 
         # cleanup the camera and close any open windows at exit
