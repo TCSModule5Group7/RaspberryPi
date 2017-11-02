@@ -1,37 +1,29 @@
-import Queue
-import SocketServer
-
-from threading import Thread
+from SocketServer import ThreadingTCPServer, BaseRequestHandler
 
 import Logger
 
 
-class ClientHandler(SocketServer.BaseRequestHandler):
+class ClientHandler(BaseRequestHandler):
     def handle(self):
         line = ""
         data = ""
 
-        while line != "quit":
+        while True:
             received = self.request.recv(1024)
             data += received
             if "\n" in data:
                 line, data = data.split("\n", 1)
-                Logger.logtcp("received: " + line)
-                try:
+                if not self.server.q_read.full():
                     self.server.q_read.put(line, False)
-                except Queue.Full:
-                    Logger.logtcp("Queue is full")
-            self.request.send("received\n")
-        self.request.close()
-        Logger.logtcp("Client disconnected")
+                    Logger.log_tcp("Received: '" + line + "'")
+                    self.request.send("Received\n")
+            if line == "quit":
+                break
 
 
-class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+class ThreadedTCPServer(ThreadingTCPServer):
     def __init__(self, host, port, q_read, q_write):
-        SocketServer.TCPServer.__init__(self, (host, port), ClientHandler)
+        ThreadingTCPServer.__init__(self, (host, port), ClientHandler)
         self.daemon_threads = True
         self.q_read = q_read
         self.q_write = q_write
-
-    def start(self):
-        self.serve_forever()
