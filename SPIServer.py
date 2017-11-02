@@ -1,8 +1,6 @@
 import spidev
 from threading import Thread
 
-import Logger
-
 TRANSFER = 0b00000000
 READ = 0b10000000
 WRITE = 0b01000000
@@ -24,9 +22,6 @@ class SPIThread(Thread):
 
     def run(self):
         self.running = True
-        self.transfer()
-
-    def transfer(self):
         while self.running:
             if not self.q_write.empty():
                 write_data = [TRANSFER, self.q_write.get(False)]
