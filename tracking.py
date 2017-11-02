@@ -5,8 +5,8 @@
 # import the necessary packages
 from collections import deque
 from threading import Thread
-from picamera.array import PiRGBArray
-from picamera import PiCamera
+#from picamera.array import PiRGBArray
+#from picamera import PiCamera
 import numpy as np
 import time
 import argparse
@@ -73,6 +73,7 @@ class Tracker(Thread):
                 # grab the raw NumPy array representing the image, then initialize the timestamp
                 # and occupied/unoccupied text
                     frame = frame.array
+                    rawCapture.truncate(0)
 
             else :
                 (grabbed, frame) = camera.read()
@@ -107,11 +108,11 @@ class Tracker(Thread):
 
             # find contours in the mask and initialize the current
             # (x, y) center of the ball
-            (_,cntsgreen) = cv2.findContours(maskgreen.copy(), cv2.RETR_EXTERNAL,
+            cntsgreen = cv2.findContours(maskgreen.copy(), cv2.RETR_EXTERNAL,
                                          cv2.CHAIN_APPROX_SIMPLE)[-2]
             centergreen = None
 
-            (_,cntsblue) = cv2.findContours(maskblue.copy(), cv2.RETR_EXTERNAL,
+            cntsblue = cv2.findContours(maskblue.copy(), cv2.RETR_EXTERNAL,
                                         cv2.CHAIN_APPROX_SIMPLE)[-2]
             centerblue = None
 
@@ -189,8 +190,8 @@ class Tracker(Thread):
             # cv2.imshow("Frameblue", frameblue)
             key = cv2.waitKey(1) & 0xFF
 
-            if pi == True:
-                rawCapture.truncate(0)
+            #if pi == True:
+                #rawCapture.truncate(0)
 
             # if the 'q' key is pressed, stop the loop
             if key == ord("q"):
