@@ -13,6 +13,10 @@ from Wall import Wall
 from physics.Manifold import Manifold
 from physics.Vec2 import Vec2
 
+from Connector import Connector
+
+import socket
+
 ACCELERATION = 10
 BALL_SPEED = 10
 
@@ -100,9 +104,17 @@ class Controller:
         self.k_up = self.k_down = 0
         self.field = Game(Game.WIDTH, Game.HEIGHT)
 
+        # Connector that sends data to the visualization
+        self.useConnector = True
+        try:
+            self.connector = Connector("localhost",420)
+            self.connector.connect()
+        except socket.error:
+            self.useConnector = False
+
         # PyGame
         pygame.init()
-        self.screen = pygame.display.set_mode((1080, 720))
+        self.screen = pygame.display.set_mode((Game.WIDTH, Game.HEIGHT))
         self.clock = pygame.time.Clock()
 
         # Loop
@@ -126,6 +138,15 @@ class Controller:
 
         # Update the field
         self.field.update()
+
+        # Send gamestate to visualization
+        if self.useConnector:
+            self.connector.update(float(self.field.paddle1.pos.y)/Game.HEIGHT,
+                                  float(self.field.paddle2.pos.y)/Game.HEIGHT,
+                                  float(self.field.bal.pos.x)/Game.WIDTH,
+                                  float(self.field.bal.pos.y)/Game.HEIGHT,
+                                  self.field.paddle1.score,
+                                  self.field.paddle2.score)
 
         # Render
         pixels = self.field.render()

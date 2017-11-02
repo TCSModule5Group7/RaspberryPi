@@ -15,7 +15,7 @@ class Connector():
                          "/" + str(scoreR) + "\n")
 
     def close(self):
-        self.socket.send(str("quit\n"))
+        self.socket.send("quit\n")
 
     def shutdown(self):
-        self.socket.send(str("quit\n"))
+        self.socket.send("shutdown\n")
