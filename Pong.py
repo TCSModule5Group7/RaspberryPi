@@ -23,20 +23,15 @@ class GameThread(Thread):
 
     def run(self):
         import re
-        binary = re.compile("^0b[01]{8}$")
         hexadecimal = re.compile("^0x[0-9a-fA-F]{2}$")
         self.running = True
         while self.running:
             if not q_tcp_read.empty():
-                byte = q_tcp_read.get(False)
-                if binary.match(byte):
-                    byte = int(byte, 2)
+                byte_string = q_tcp_read.get(False)
+                if hexadecimal.match(byte_string):
+                    byte_int = int(byte_string, 16)
                     if useSPI:
-                        q_spi_write.put(byte)
-                elif hexadecimal.match(byte):
-                    byte = int(byte, 16)
-                    if useSPI:
-                        q_spi_write.put(byte)
+                        q_spi_write.put(byte_int)
                 else:
                     Logger.log_error("Could not convert text to byte")
 

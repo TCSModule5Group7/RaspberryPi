@@ -34,11 +34,11 @@ class SPIThread(Thread):
             read_data = self.spi.xfer2(write_data)
             if not self.q_read.full():
                 if write_data[0] == TRANSFER:
-                    Logger.log_spi("snd: hex '0x{:02x}|0x{:02x}' bin '0b{:08b}|0b{:08b}'".format(write_data[0], write_data[1], write_data[0], write_data[1]))
-                    Logger.log_spi("rcv: hex '0x{:02x}|0x{:02x}' bin '0b{:08b}|0b{:08b}'".format(read_data[0], read_data[1], read_data[0], read_data[1]))
+                    Logger.log_spi("snd: '" + hex(write_data[0]) + "|" + hex(write_data[1]) + "'")
+                    Logger.log_spi("rcv: '" + hex(read_data[0]) + "|" + hex(read_data[1]) + "'")
                     self.q_read.put(read_data[1], False)
                 elif write_data[0] == READ:
-                    Logger.log_spi("rcv: hex '0x{:02x}|0x{:02x}' bin '0b{:08b}|0b{:08b}'".format(read_data[0], read_data[1], read_data[0], read_data[1]))
+                    Logger.log_spi("rcv: '" + hex(read_data[0]) + "|" + hex(read_data[1]) + "'")
                     self.q_read.put(read_data[1], False)
         self.spi.close()
 
