@@ -18,21 +18,27 @@ class TCPThread(Thread):
 
 
 class ClientHandler(BaseRequestHandler):
-    def handle(self):
-        line = ""
-        data = ""
+    def setup(self):
+        Logger.log_tcp("Client connected")
 
-        while True:
+    def handle(self):
+        running = True
+        data = ""
+        while running:
             received = self.request.recv(1024)
             data += received
             if "\n" in data:
                 line, data = data.split("\n", 1)
-                if not self.server.q_read.full():
+                Logger.log_tcp("Received: '" + line + "'")
+                self.request.send("Received\n")
+                if line == "quit":
+                    running = False
+
+                elif not self.server.q_read.full():
                     self.server.q_read.put(line, False)
-                    Logger.log_tcp("Received: '" + line + "'")
-                    self.request.send("Received\n")
-            if line == "quit":
-                break
+
+    def finish(self):
+        Logger.log_tcp("Client disconnected")
 
 
 class ThreadedTCPServer(ThreadingTCPServer):

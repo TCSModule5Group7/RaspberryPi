@@ -50,7 +50,7 @@ if __name__ == "__main__":
     game_thread = None
 
     try:
-        # VARIABLES ####################################################################################################
+        # VARIABLES
         Logger.log("Initializing variables")
 
         host = argv[1]
@@ -61,7 +61,7 @@ if __name__ == "__main__":
             device = 0
 
         Logger.log("Initialized variables")
-        # QUEUES #######################################################################################################
+        # QUEUES
         Logger.log("Initializing queues")
 
         if useSPI:
@@ -72,7 +72,7 @@ if __name__ == "__main__":
         q_tcp_write = Queue()  # Stores data to be written to the tcp interface (should only contain strings)
 
         Logger.log("Initialized queues")
-        # SPI-SERVER ###################################################################################################
+        # SPI-SERVER
         if useSPI:
             Logger.log_spi(
                 "Initializing spi-server with: " +
@@ -83,7 +83,7 @@ if __name__ == "__main__":
             Logger.log_spi(
                 "Initialized spi-server with: " +
                 "[mode:" + str(mode) + "] [bus:" + str(bus) + "] [device:" + str(device) + "]")
-        # TCP-SERVER ###################################################################################################
+        # TCP-SERVER
         Logger.log_tcp("Initializing tcp-server with: " +
                        "[host:" + str(host) + "] [port:" + str(port) + "]")
 
@@ -91,32 +91,32 @@ if __name__ == "__main__":
 
         Logger.log_tcp("Initialized tcp-server with:" +
                        "[host:" + str(host) + "] [port:" + str(port) + "]")
-        # GAME #########################################################################################################
+        # GAME
         Logger.log_game("Initializing game")
 
         game_thread = GameThread()
 
         Logger.log_game("Initialized game")
-        # SPI-SERVER ###################################################################################################
+        # SPI-SERVER
         if useSPI:
             Logger.log_spi("Starting spi-server")
 
             spi_thread.start()
 
             Logger.log_spi("Started spi-server")
-        # TCP-SERVER ###################################################################################################
+        # TCP-SERVER
         Logger.log_tcp("Starting tcp-server")
 
         tcp_thread.start()
 
         Logger.log_tcp("Started tcp-server")
-        # GAME #########################################################################################################
+        # GAME
         Logger.log_game("Starting game")
 
         game_thread.start()
 
         Logger.log_game("Started game")
-        # INPUT ########################################################################################################
+        # INPUT
         while True:
             line = raw_input()
             if line == "quit":
