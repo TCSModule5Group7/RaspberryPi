@@ -61,10 +61,13 @@ if __name__ == "__main__":
             while True:
                 if not q_tcp_read.empty():
                     byte = q_tcp_read.get(False)
-                    byte = int(byte, 16)
+                    try:
+                        byte = int(byte, 16)
 
-                    if useSPI:
-                        q_spi_write.put(byte)
+                        if useSPI:
+                            q_spi_write.put(byte)
+                    except:
+                        Logger.logerror("Could not convert received data to byte")
         else:
             Logger.logerror("Usage 'python Pong.py <HOST> <PORT>'")
     except KeyboardInterrupt:
