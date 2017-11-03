@@ -1,7 +1,7 @@
 from Vec2 import Vec2
 
 
-class AABB:
+class AABB(object):
     def __init__(self, pos, width, height):
         self.width = width
         self.height = height
