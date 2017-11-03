@@ -128,8 +128,10 @@ class Game(object):
     def add_point(self):
         if self.ball.pos.x < Game.WIDTH / 2:
             self.computer.add_point()
+            self.ball.pos = Vec2(540,360)
         else:
             self.player.add_point()
+            self.ball.pos = Vec2(540,360)
         print self.get_score()
 
     def get_score(self):
