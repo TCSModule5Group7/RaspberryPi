@@ -1,21 +1,21 @@
 #!/usr/bin/python
 from Queue import Queue
-from errno import EADDRINUSE
-from socket import error
-from sys import argv
+import errno
+import socket
+import sys
 from threading import Thread
 
 import Logger
 from TCPServer import TCPThread
 
-# Switch to disable or enable the SPIServer
+# Switch to disable or enable the SPIServer.
 useSPI = False
 
 if useSPI:
     from SPIServer import SPIThread
 
 
-# Test code to just forward tcp to spi
+# Test code to just forward tcp to spi.
 class GameThread(Thread):
     def __init__(self):
         Thread.__init__(self)
@@ -39,9 +39,9 @@ class GameThread(Thread):
         self.running = False
 
 
-# Main method that initializes all variables and starts the TCPServer and SPIServer (if enabled)
-# The TCPServer can be configured using command arguments <host> <port>
-# The SPIServer defaults to CLOCK_POLARITY = 0, CLOCK_PHASE = 0 BUS = 0 and DEVICE = 0
+# Main method that initializes all variables and starts the TCPServer and SPIServer (if enabled).
+# The TCPServer can be configured using command arguments <host> <port>.
+# The SPIServer defaults to CLOCK_POLARITY = 0, CLOCK_PHASE = 0 BUS = 0 and DEVICE = 0.
 if __name__ == "__main__":
     if useSPI:
         spi_thread = None
@@ -54,8 +54,8 @@ if __name__ == "__main__":
         # VARIABLES
         Logger.log("Initializing variables")
 
-        host = argv[1]
-        port = int(argv[2])
+        host = sys.argv[1]
+        port = int(sys.argv[2])
         if useSPI:
             mode = 0b00
             bus = 0
@@ -66,11 +66,11 @@ if __name__ == "__main__":
         Logger.log("Initializing queues")
 
         if useSPI:
-            q_spi_read = Queue()  # Stores data read from the spi interface (should only contain bytes)
-            q_spi_write = Queue()  # Stores data to be written to the spi interface (should only contain bytes)
+            q_spi_read = Queue()  # Stores data read from the spi interface (should only contain bytes).
+            q_spi_write = Queue()  # Stores data to be written to the spi interface (should only contain bytes).
 
-        q_tcp_read = Queue()  # Stores data read from the tcp interface (should only contain strings)
-        q_tcp_write = Queue()  # Stores data to be written to the tcp interface (should only contain strings)
+        q_tcp_read = Queue()  # Stores data read from the tcp interface (should only contain strings).
+        q_tcp_write = Queue()  # Stores data to be written to the tcp interface (should only contain strings).
 
         Logger.log("Initialized queues")
         # SPI-SERVER
@@ -126,8 +126,8 @@ if __name__ == "__main__":
     except (ValueError, IndexError):
         Logger.log_error("Usage: 'python Pong.py <HOST> <PORT>'")
 
-    except error as socket_error:
-        if socket_error.errno == EADDRINUSE:
+    except socket.error as socket_error:
+        if socket_error.errno == errno.EADDRINUSE:
             Logger.log_error("Address already in use")
         else:
             raise socket_error
