@@ -9,7 +9,6 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 import numpy as np
 import time
-import argparse
 import imutils
 import cv2
 import Queue
@@ -39,7 +38,7 @@ class Tracker(Thread):
         try:
             pi = False
 
-            greenLower = (30, 50, 50)
+            greenLower = (25, 50, 50)
             greenUpper = (75, 255, 255)
 
             # define lower and upper boundaries of blue
@@ -55,19 +54,11 @@ class Tracker(Thread):
                 camera = PiCamera()
                 camera.resolution = (640, 480)
                 camera.framerate = 32
-                print("picam selected")
                 rawCapture = PiRGBArray(camera, size=(640, 480))
                 pi = True
                 time.sleep(0.1)
                 print("picam setup")
-            """elif not self.campath:
-                camera = cv2.VideoCapture(0)
-    
-    
-            # otherwise, grab a reference to the video file
-            else:
-                camera = cv2.VideoCapture(self.campath)
-            """
+
             # keep looping
             while True:
                 print("entering loop")
@@ -77,12 +68,9 @@ class Tracker(Thread):
                         # grab the raw NumPy array representing the image, then initialize the timestamp
                         # and occupied/unoccupied text
                         frame = frame.array
-                        print("frame")
 
                         # resize the frame, blur it, and convert it to the HSV
                         # color space
-
-
                         framegreen = imutils.resize(frame, width=600)
                         frameblue = framegreen.copy()
 
@@ -102,7 +90,7 @@ class Tracker(Thread):
                         maskblue = cv2.inRange(hsvblue, blueLower, blueUpper)
                         maskblue = cv2.erode(maskblue, None, iterations=2)
                         maskblue = cv2.dilate(maskblue, None, iterations=2)
-                        print("frames and masks active")
+
                         # find contours in the mask and initialize the current
                         # (x, y) center of the ball
                         cntsgreen = cv2.findContours(maskgreen.copy(), cv2.RETR_EXTERNAL,
@@ -122,7 +110,7 @@ class Tracker(Thread):
                             ((x, y), radius) = cv2.minEnclosingCircle(c)
                             M = cv2.moments(c)
                             centergreen = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-                            YGreen = float(centergreen[1] /450)
+                            YGreen = float(centergreen[1] / 450)
 
                             # only proceed if the radius meets a minimum size
                             if radius > 10:
@@ -145,7 +133,7 @@ class Tracker(Thread):
                             ((x, y), radius) = cv2.minEnclosingCircle(c)
                             M = cv2.moments(c)
                             centerblue = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-                            YBlue = (float(centerblue[1]) /450)
+                            YBlue = (float(centerblue[1]) / 450)
 
                             # only proceed if the radius meets a minimum size
                             if radius > 10:

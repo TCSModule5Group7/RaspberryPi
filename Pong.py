@@ -111,18 +111,39 @@ if __name__ == "__main__":
         tcp_thread.start()
 
         Logger.log_tcp("Started tcp-server")
-        # GAME
-        Logger.log_game("Starting game")
 
-        game_thread.start()
 
-        Logger.log_game("Started game")
         # INPUT
         while True:
             line = raw_input()
             if line == "quit":
                 break
+            """
+            if (q_tcp_read.get() == "start" && game_thread.running == False):
+                Logger.log_game("Starting game")
 
+                game_thread.start()
+
+                Logger.log_game("Started game")
+            elif(q_tcp_read.get() == "stop"):
+                Logger.log_game("Stopping Game")
+                
+                break
+            elif(q_tcp_read.get() == "reset"):
+                
+                if game_thread.running == False:
+                    game_thread.start()
+                    Logger.log_game("Starting Game")
+                else:
+                    Logger.log_game("resetting Game")
+                    Logger.log_game("stopping Game")
+                    
+                    game_thread.shutdown()
+                    
+                    Logger.log_game("starting new Game")
+                    game_thread.start()
+                    Logger.log_game("Started new Game")
+            """
     except (ValueError, IndexError):
         Logger.log_error("Usage: 'python Pong.py <HOST> <PORT>'")
 

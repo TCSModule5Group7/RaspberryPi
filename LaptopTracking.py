@@ -39,7 +39,7 @@ class LaptopTracker(Thread):
         # list of tracked points
 
 
-        greenLower = (40, 70, 60)
+        greenLower = (30, 50, 50)
         greenUpper = (75, 255, 255)
 
         # define lower and upper boundaries of blue
@@ -73,7 +73,7 @@ class LaptopTracker(Thread):
 
             framegreen = imutils.resize(frame, width=600)
             frameblue = framegreen.copy()
-            print(frameblue.shape)
+
             frameblue = imutils.resize(frame, width=600)
 
             # blurred = cv2.GaussianBlur(framegreen, (11, 11), 0)

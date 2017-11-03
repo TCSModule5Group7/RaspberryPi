@@ -14,6 +14,7 @@ class TrackingTest(Thread):
         self.running = True
         self.q_camera_read_green = Queue.Queue()
         self.q_camera_read_blue = Queue.Queue()
+
         #self.tracker = tracking.Tracker(self.q_camera_read_green, self.q_camera_read_blue,
         #                                "pi")  # "C:\\Users\\Sander\\Downloads\\ball-tracking\\ball_tracking_example.mp4")
         self.tracker = LaptopTracking.LaptopTracker(self.q_camera_read_green, self.q_camera_read_blue, False)
