@@ -183,7 +183,7 @@ class Controller(object):
         while 1:
             self.loop(self.q_camera_read_green, self.q_camera_read_blue)
 
-    def loop(self, QueueBlue, QueueGreen):
+    def loop(self, QueueGreen, QueueBlue):
         self.clock.tick(60)
         self.running = True
 
