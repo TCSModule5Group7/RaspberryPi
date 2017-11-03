@@ -122,7 +122,7 @@ class Tracker(Thread):
                             ((x, y), radius) = cv2.minEnclosingCircle(c)
                             M = cv2.moments(c)
                             centergreen = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-                            YGreen = centergreen[1]
+                            YGreen = float(centergreen[1] /450)
 
                             # only proceed if the radius meets a minimum size
                             if radius > 10:
@@ -145,7 +145,7 @@ class Tracker(Thread):
                             ((x, y), radius) = cv2.minEnclosingCircle(c)
                             M = cv2.moments(c)
                             centerblue = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-                            YBlue = centerblue[1]
+                            YBlue = (float(centerblue[1]) /450)
 
                             # only proceed if the radius meets a minimum size
                             if radius > 10:

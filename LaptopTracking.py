@@ -12,6 +12,7 @@ import imutils
 import cv2
 import Queue
 import atexit
+from decimal import Decimal
 
 
 class LaptopTracker(Thread):
@@ -72,7 +73,7 @@ class LaptopTracker(Thread):
 
             framegreen = imutils.resize(frame, width=600)
             frameblue = framegreen.copy()
-
+            print(frameblue.shape)
             frameblue = imutils.resize(frame, width=600)
 
             # blurred = cv2.GaussianBlur(framegreen, (11, 11), 0)
@@ -110,7 +111,7 @@ class LaptopTracker(Thread):
                 ((x, y), radius) = cv2.minEnclosingCircle(c)
                 M = cv2.moments(c)
                 centergreen = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-                Ygreen = centergreen[1]
+                Ygreen = (float(centergreen[1]) / 450)
 
                 # only proceed if the radius meets a minimum size
                 if radius > 10:
@@ -133,7 +134,7 @@ class LaptopTracker(Thread):
                 ((x, y), radius) = cv2.minEnclosingCircle(c)
                 M = cv2.moments(c)
                 centerblue = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-                YBlue = centerblue[1]
+                YBlue = (float(centerblue[1]) / 450)
 
                 # only proceed if the radius meets a minimum size
                 if radius > 10:
