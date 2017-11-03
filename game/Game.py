@@ -102,7 +102,7 @@ class Game:
 class Controller:
     FRAMES_PER_SECOND = 30
 
-    def __init__(self):
+    def __init__(self,render):
         self.k_up = self.k_down = 0
         self.field = Game(Game.WIDTH, Game.HEIGHT)
 
@@ -114,9 +114,12 @@ class Controller:
         except socket.error:
             self.useConnector = False
 
+        self.render = render
+
         # PyGame
         pygame.init()
-        self.screen = pygame.display.set_mode((Game.WIDTH, Game.HEIGHT))
+        if render:
+            self.screen = pygame.display.set_mode((Game.WIDTH, Game.HEIGHT))
         self.clock = pygame.time.Clock()
 
         # Loop
@@ -151,9 +154,11 @@ class Controller:
                                   self.field.paddle2.score)
 
         # Render
-        pixels = self.field.render()
-        pygame.surfarray.blit_array(self.screen, pixels)
-        pygame.display.flip()
+        if self.render:
+            pixels = self.field.render()
+            pygame.surfarray.blit_array(self.screen, pixels)
+            pygame.display.flip()
 
 
-Controller()
+if __name__ == "__main__":
+    Controller(True)
