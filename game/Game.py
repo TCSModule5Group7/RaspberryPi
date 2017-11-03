@@ -1,6 +1,7 @@
 import itertools
 import math
 import socket
+import random
 import sys
 import Queue
 # import tracking
@@ -23,8 +24,8 @@ from physics.Vec2 import Vec2
 from threading import Thread
 
 ACCELERATION = 10
-SPEED_BALL = 10
-SPEED_RATIO_TRACKING_BALL = 1.5
+SPEED_BALL = 7
+SPEED_RATIO_TRACKING_BALL = 2
 
 
 class Game(object):
@@ -39,11 +40,9 @@ class Game(object):
         self.ball = Ball(920, 360)
         self.ball.velocity = Vec2(-0.707, -0.707)
         self.ball.velocity *= SPEED_BALL
-        self.track_ball = TrackingBall(920, 360)
-        self.track_ball.velocity = self.ball.velocity
-        self.track_ball.velocity *= SPEED_RATIO_TRACKING_BALL
-        self.computer = ComputerPaddle(100, 360)
-        self.player = PlayerPaddle(980, 360)
+        self.track_ball = self.ball
+        self.computer = ComputerPaddle(50, 360)
+        self.player = PlayerPaddle(1030, 360)
         self.wall_north = Wall(540, 0, 1080, 20)
         self.wall_east = Wall(1080, 360, 20, 720)
         self.wall_south = Wall(540, 720, 1080, 20)
@@ -51,6 +50,8 @@ class Game(object):
 
         self.entities = [self.computer, self.player, self.ball, self.track_ball]
         self.walls = [self.wall_north, self.wall_east, self.wall_south, self.wall_west]
+
+        self.track_ball = self.spawn_trackball()
 
     def input(self, dx, dy):
         self.player.velocity = Vec2(ACCELERATION * dx, ACCELERATION * dy)
@@ -60,12 +61,8 @@ class Game(object):
             self.player.velocity = Vec2(0, 0)
 
     def paddletracking(self, datagreen):
-        if (datagreen < Game.height and datagreen > 0):
-            self.player.pos.y = datagreen
-        elif (datagreen < 0):
-            self.player.pos.y = 0
-        elif (datagreen > Game.height):
-            self.player.pos.y = Game.height - 1
+        if 1 > datagreen > 0:
+            self.player.pos.y = datagreen * Game.HEIGHT
 
     def update(self):
         # Collision of ball
@@ -76,19 +73,15 @@ class Game(object):
             if collision.aabb_vs_aabb(manifold):
                 # Resolve collision
                 collision.resolve_collision(manifold)
-                # Transfer momentum
+
                 if isinstance(entity, Paddle):
+                    print "collision"
+                    self.track_ball = self.spawn_trackball()
+
+                    # Transfer momentum
                     vel_dir = self.ball.velocity / Vec2(SPEED_BALL, SPEED_BALL)
                     ratio = 1 / vel_dir.y
                     # self.ball.velocity.y *= random.uniform(-ratio, ratio)
-
-                # Recreate Tracking ball on player hit
-                if entity == self.player:
-                    self.entities.remove(self.track_ball)
-                    self.track_ball = TrackingBall(self.ball.pos.x, self.ball.pos.y)
-                    self.track_ball.velocity = self.ball.velocity
-                    self.track_ball.velocity *= SPEED_RATIO_TRACKING_BALL
-                    self.entities.append(self.track_ball)
 
                 # Check for point
                 if entity == self.wall_east or entity == self.wall_west:
@@ -99,16 +92,10 @@ class Game(object):
 
         # Collision of track ball
         for entity in self.walls:
-            if entity == self.track_ball:
-                continue
             manifold = Manifold(self.track_ball, entity)
             if collision.aabb_vs_aabb(manifold):
                 # Resolve collision
                 collision.resolve_collision(manifold)
-
-                # If tracking ball hits west wall
-                if entity == self.wall_west:
-                    self.track_ball.velocity = Vec2(0, 0)
 
         # Give ball minimum speed
         ratio = SPEED_BALL / math.sqrt(math.pow(self.ball.velocity.x, 2) + math.pow(self.ball.velocity.y, 2))
@@ -141,13 +128,26 @@ class Game(object):
         if self.ball.pos.x < Game.WIDTH / 2:
             self.computer.add_point()
             self.ball.pos = Vec2(540, 360)
+            self.ball.velocity.y = random.uniform(-0.5 * SPEED_BALL, 0.5 * SPEED_BALL)
+            self.track_ball = self.spawn_trackball()
         else:
             self.player.add_point()
             self.ball.pos = Vec2(540, 360)
+            self.ball.velocity.y = random.uniform(-0.7 * SPEED_BALL, 0.7 * SPEED_BALL)
+            self.track_ball = self.spawn_trackball()
         print self.get_score()
 
     def get_score(self):
         return [self.computer.score, self.player.score]
+
+    def spawn_trackball(self):
+        if self.entities.__contains__(self.track_ball):
+            self.entities.remove(self.track_ball)
+        self.track_ball = TrackingBall(self.ball.pos.x, self.ball.pos.y)
+        self.track_ball.velocity = self.ball.velocity
+        self.track_ball.velocity *= SPEED_RATIO_TRACKING_BALL
+        self.entities.append(self.track_ball)
+        return self.track_ball
 
 
 class Controller(object):
@@ -197,14 +197,11 @@ class Controller(object):
                 self.k_down = down * 1
             elif event.key == K_ESCAPE:
                 sys.exit(0)
-
+        # self.field.input(0, self.k_down + self.k_up)
 
         if not QueueGreen.empty():
             datagreen = QueueGreen.get()
-            print("not empty")
             self.field.paddletracking(datagreen)
-        else:
-            print("empty")
         #print(datagreen)
 
         # print("green"+ str(datagreen))

@@ -39,7 +39,7 @@ class LaptopTracker(Thread):
         # list of tracked points
 
 
-        greenLower = (30, 50, 50)
+        greenLower = (40, 70, 60)
         greenUpper = (75, 255, 255)
 
         # define lower and upper boundaries of blue
