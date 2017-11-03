@@ -89,8 +89,10 @@ class Game:
     def add_point(self):
         if self.bal.pos.x < Game.WIDTH / 2:
             self.paddle1.add_point()
+            self.bal.pos = Vec2(540,360)
         else:
             self.paddle2.add_point()
+            self.bal.pos = Vec2(540,360)
         print self.get_score()
 
     def get_score(self):
