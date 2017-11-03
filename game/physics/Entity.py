@@ -1,7 +1,7 @@
 from Vec2 import Vec2
 
 
-class Entity:
+class Entity(object):
     def __init__(self, x, y, inv_mass, restitution, shape):
         self.pos = Vec2(x, y)
         self.velocity = Vec2(0, 0)
