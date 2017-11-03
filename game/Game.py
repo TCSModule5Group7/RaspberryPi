@@ -2,12 +2,15 @@ import itertools
 import math
 import socket
 import sys
-
+import Queue
+# import tracking
+import LaptopTracking
 import numpy as np
 import pygame
 from pygame.locals import *
 
 import physics.Collision as collision
+
 from Ball import Ball
 from ComputerPaddle import ComputerPaddle
 from Connector import Connector
@@ -17,6 +20,7 @@ from TrackingBall import TrackingBall
 from Wall import Wall
 from physics.Manifold import Manifold
 from physics.Vec2 import Vec2
+from threading import Thread
 
 ACCELERATION = 10
 SPEED_BALL = 10
@@ -54,6 +58,14 @@ class Game(object):
         if not (0 < self.player.pos.y - self.player.shape.height / 2 + self.player.velocity.y) or not (
                             self.player.pos.y + self.player.shape.height / 2 + self.player.velocity.y < Game.HEIGHT):
             self.player.velocity = Vec2(0, 0)
+
+    def paddletracking(self, datagreen):
+        if (datagreen < Game.height and datagreen > 0):
+            self.player.pos.y = datagreen
+        elif (datagreen < 0):
+            self.player.pos.y = 0
+        elif (datagreen > Game.height):
+            self.player.pos.y = Game.height - 1
 
     def update(self):
         # Collision of ball
@@ -128,10 +140,10 @@ class Game(object):
     def add_point(self):
         if self.ball.pos.x < Game.WIDTH / 2:
             self.computer.add_point()
-            self.ball.pos = Vec2(540,360)
+            self.ball.pos = Vec2(540, 360)
         else:
             self.player.add_point()
-            self.ball.pos = Vec2(540,360)
+            self.ball.pos = Vec2(540, 360)
         print self.get_score()
 
     def get_score(self):
@@ -141,7 +153,14 @@ class Game(object):
 class Controller(object):
     FRAMES_PER_SECOND = 30
 
-    def __init__(self,render):
+    def __init__(self):
+        # object tracking queues
+        self.q_camera_read_green = Queue.Queue()
+        self.q_camera_read_blue = Queue.Queue()
+        # object tracking thread
+        self.tracker = LaptopTracking.LaptopTracker(self.q_camera_read_green, self.q_camera_read_blue,
+                                                    False)
+
         self.k_up = self.k_down = 0
         self.field = Game(Game.WIDTH, Game.HEIGHT)
 
@@ -153,20 +172,20 @@ class Controller(object):
         except socket.error:
             self.useConnector = False
 
-        self.render = render
-
         # PyGame
         pygame.init()
-        if render:
-            self.screen = pygame.display.set_mode((Game.WIDTH, Game.HEIGHT))
+        self.screen = pygame.display.set_mode((Game.WIDTH, Game.HEIGHT))
         self.clock = pygame.time.Clock()
+
+        self.tracker.start()
 
         # Loop
         while 1:
-            self.loop()
+            self.loop(self.q_camera_read_green, self.q_camera_read_blue)
 
-    def loop(self):
+    def loop(self, QueueBlue, QueueGreen):
         self.clock.tick(60)
+        self.running = True
 
         # Input Handling
         for event in pygame.event.get():
@@ -178,7 +197,22 @@ class Controller(object):
                 self.k_down = down * 1
             elif event.key == K_ESCAPE:
                 sys.exit(0)
-        self.field.input(0, self.k_up + self.k_down)
+
+
+        if not QueueGreen.empty():
+            datagreen = QueueGreen.get()
+            print("not empty")
+            self.field.paddletracking(datagreen)
+        else:
+            print("empty")
+        #print(datagreen)
+
+        # print("green"+ str(datagreen))
+        #datablue = QueueBlue.get()
+        # print("blue" + str(datablue))
+
+
+        #self.field.input(0, self.k_up + self.k_down)
 
         # Update the field
         self.field.update()
@@ -193,11 +227,9 @@ class Controller(object):
                                   self.field.paddle2.score)
 
         # Render
-        if self.render:
-            pixels = self.field.render()
-            pygame.surfarray.blit_array(self.screen, pixels)
-            pygame.display.flip()
+        pixels = self.field.render()
+        pygame.surfarray.blit_array(self.screen, pixels)
+        pygame.display.flip()
 
 
-if __name__ == "__main__":
-    Controller(True)
+Controller()

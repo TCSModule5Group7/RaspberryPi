@@ -122,6 +122,7 @@ class Tracker(Thread):
                             ((x, y), radius) = cv2.minEnclosingCircle(c)
                             M = cv2.moments(c)
                             centergreen = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+                            YGreen = centergreen[1]
 
                             # only proceed if the radius meets a minimum size
                             if radius > 10:
@@ -133,7 +134,7 @@ class Tracker(Thread):
 
                         # update the points queue
                         ptsgreen.appendleft(centergreen)
-                        self.q_read_green.put(centergreen)
+                        self.q_read_green.put(YGreen)
 
                         # only proceed if at least one contour was found
                         if len(cntsblue) > 0:
@@ -144,6 +145,7 @@ class Tracker(Thread):
                             ((x, y), radius) = cv2.minEnclosingCircle(c)
                             M = cv2.moments(c)
                             centerblue = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
+                            YBlue = centerblue[1]
 
                             # only proceed if the radius meets a minimum size
                             if radius > 10:
@@ -155,8 +157,8 @@ class Tracker(Thread):
 
                         # update the points queue
                         ptsblue.appendleft(centerblue)
-                        print("passing coordinates to queue")
-                        self.q_read_blue.put(centerblue)
+                        print("passing  Y coordinates to queue")
+                        self.q_read_blue.put(YBlue)
 
                         """THIS IS FOR SHOWING THE OBJECT TRACKING IN A WINDOW, NOT NEEDED WITH THE PI"""
                         """                       
