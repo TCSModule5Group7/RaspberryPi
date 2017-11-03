@@ -27,12 +27,15 @@ class SPIThread(Thread):
                 write_data = [TRANSFER, self.q_write.get(False)]
             else:
                 write_data = [READ, NO_DATA]
-                write_data = [NO_OPERATION, NO_DATA]  # Temporary line to not overflow queues
+                write_data = [NO_OPERATION, NO_DATA]  # Temporary line to not overflow queues.
 
             read_data = self.spi.xfer2(write_data)
             if not self.q_read.full():
                 self.q_read.put(read_data[1], False)
-        self.spi.close()
+        self.cleanup()
 
     def shutdown(self):
         self.running = False
+
+    def cleanup(self):
+        self.spi.close()

@@ -10,11 +10,14 @@ class TCPThread(Thread):
         self.tcp_server = ThreadedTCPServer(host, port, q_read, q_write)
 
     def run(self):
-        self.tcp_server.serve_forever()
-        self.tcp_server.server_close()
+        self.tcp_server.serve_forever()  # Will loop until KeyboardInterrupt or if tcp_server.shutdown() is called.
+        self.cleanup()
 
     def shutdown(self):
         self.tcp_server.shutdown()
+
+    def cleanup(self):
+        self.tcp_server.server_close()
 
 
 class ClientHandler(BaseRequestHandler):
