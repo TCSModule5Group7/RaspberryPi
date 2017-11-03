@@ -10,6 +10,5 @@ class TrackingBall(Ball):
         if self.pos.x > 40:
             super(TrackingBall, self).update()
 
-
-    # def render(self, game):
-    #     return game.pixels
+    def render(self, game):
+        return game.pixels

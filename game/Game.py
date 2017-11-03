@@ -216,12 +216,12 @@ class Controller(object):
 
         # Send gamestate to visualization
         if self.useConnector:
-            self.connector.update(float(self.field.paddle1.pos.y) / Game.HEIGHT,
-                                  float(self.field.paddle2.pos.y) / Game.HEIGHT,
-                                  float(self.field.bal.pos.x) / Game.WIDTH,
-                                  float(self.field.bal.pos.y) / Game.HEIGHT,
-                                  self.field.paddle1.score,
-                                  self.field.paddle2.score)
+            self.connector.update(float(self.field.computer.pos.y) / Game.HEIGHT,
+                                  float(self.field.player.pos.y) / Game.HEIGHT,
+                                  float(self.field.ball.pos.x) / Game.WIDTH,
+                                  float(self.field.ball.pos.y) / Game.HEIGHT,
+                                  self.field.computer.score,
+                                  self.field.player.score)
 
         # Render
         pixels = self.field.render()
