@@ -22,9 +22,9 @@ class GameThread(Thread):
         self.running = False
 
     def run(self):
+        self.running = True
         import re
         hexadecimal = re.compile("^0x[0-9a-fA-F]{2}$")
-        self.running = True
         while self.running:
             if not q_tcp_read.empty():
                 byte_string = q_tcp_read.get(False)
