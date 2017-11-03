@@ -13,6 +13,8 @@ class Connector():
     def update(self,paddleL,paddleR,ballX,ballY,scoreL,scoreR):
         self.socket.send(str(paddleL) + "/" + str(paddleR) + "/" + str(ballX) + "/" + str(ballY) + "/" + str(scoreL) +
                          "/" + str(scoreR) + "\n")
+        return self.socket.makefile().readline()
+
 
     def close(self):
         self.socket.send("quit\n")
