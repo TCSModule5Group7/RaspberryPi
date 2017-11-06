@@ -2,18 +2,17 @@
 import errno
 import socket
 import sys
-
 from Queue import Queue
 from threading import Thread
-import pygame
+
 import Logger
 from GameController import GameController
-from TCPServer import TCPThread
-from tracking.LaptopTracking import LaptopTracker
+from TCPClient import TCPClient
+from TriTracker import LaptopTracker
 
 # Switch to disable or enable the SPIServer.
 useSPI = False
-useMotion = False
+useMotion = True
 
 if useSPI:
     from SPIServer import SPIThread
@@ -34,11 +33,23 @@ class GameThread(Thread):
     def run(self):
         result = None
         while self.running:
-            if not q_camera_read_green.empty():
-                result = self.controller.loop(q_camera_read_green.get())  # Fill in coordinate from motion tracking
-            else:
-                result = self.controller.loop()
-            q_tcp_write.put(result, False)
+            calibratedY = -1
+            datagreen = q_camera_read_green.get()
+            datablue = q_camera_read_blue.get()
+            datared = q_camera_read_red.get()
+            if datablue is not None and datared is not None and datagreen is not None and (datablue - datared) is not 0:
+                if datagreen < datablue:
+                    datagreen = datablue
+                if datagreen > datared:
+                    datagreen = datared
+
+                datagreen -= datablue
+                datared -= datablue
+                if datared > 0:
+                    calibratedY = (1 / datared) * datagreen
+
+            result = self.controller.loop(calibratedY)
+            tcp_thread.send(result)
 
     def shutdown(self):
         self.running = False
@@ -76,6 +87,7 @@ if __name__ == "__main__":
         q_tcp_write = Queue()  # Stores data to be written to the tcp interface (should only contain strings).
         q_camera_read_green = Queue()
         q_camera_read_blue = Queue()
+        q_camera_read_red = Queue()
         Logger.log("Initialized queues")
 
         # INITIALIZATION
@@ -83,7 +95,8 @@ if __name__ == "__main__":
         # MOTION TRACKING
         if useMotion:
             Logger.log("Initializing Motion Tracking")
-            motion_thread = LaptopTracker(q_camera_read_green, q_camera_read_blue, False)
+            motion_thread = LaptopTracker(q_camera_read_green, q_camera_read_blue, q_camera_read_red,
+                                          False)
             Logger.log("Initialized Motion Tracking")
 
         # SPI-SERVER
@@ -104,7 +117,7 @@ if __name__ == "__main__":
         # TCP-SERVER
         Logger.log_tcp("Initializing tcp-server with: " +
                        "[host:" + str(host) + "] [port:" + str(port) + "]")
-        tcp_thread = TCPThread(host, port, q_tcp_read, q_tcp_write)
+        tcp_thread = TCPClient(host, port, q_tcp_read, q_tcp_write)
         Logger.log_tcp("Initialized tcp-server with:" +
                        "[host:" + str(host) + "] [port:" + str(port) + "]")
 
@@ -138,7 +151,7 @@ if __name__ == "__main__":
             if line == "quit":
                 break
             if not q_tcp_read.empty():
-                print q_tcp_read.get()
+                print "received" + q_tcp_read.get()
 
     except (ValueError, IndexError):
         Logger.log_error("Usage: 'python Main.py <HOST> <PORT>'")
@@ -147,29 +160,26 @@ if __name__ == "__main__":
         if socket_error.errno == errno.EADDRINUSE:
             Logger.log_error("Address already in use")
         else:
+            print socket_error.errno
             raise socket_error
 
     except KeyboardInterrupt:
         Logger.log("Received KeyboardInterrupt")
 
     finally:
-        # TCP-SERVER
-        Logger.log_tcp("Shutting down tcp-server")
-        if tcp_thread is not None:
-            tcp_thread.shutdown()
-        Logger.log_tcp("Shut down tcp-server")
-
         # MOTION TRACKING
         if useMotion:
             Logger.log_game("Shutting down Motion Tracking")
             if motion_thread is not None:
                 motion_thread.exit_handler()
+                motion_thread.join()
             Logger.log_game("Shut down Motion Tracking")
 
         # GAME
         Logger.log_game("Shutting down game")
         if game_thread is not None:
             game_thread.shutdown()
+            game_thread.join()
         Logger.log_game("Shut down game")
 
         # SPI
@@ -177,6 +187,15 @@ if __name__ == "__main__":
             Logger.log_spi("Shutting down spi-server")
             if spi_thread is not None:
                 spi_thread.shutdown()
+                spi_thread.join()
             Logger.log_spi("Shut down spi-server")
 
+        # TCP-SERVER
+        Logger.log_tcp("Shutting down tcp-server")
+        if tcp_thread is not None:
+            tcp_thread.shutdown()
+            tcp_thread.join()
+        Logger.log_tcp("Shut down tcp-server")
+
         Logger.log("Shutting down")
+        exit(0)

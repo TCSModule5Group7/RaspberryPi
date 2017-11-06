@@ -7,7 +7,7 @@ from game.Game import Game
 
 class GameController(object):
     FRAMES_PER_SECOND = 60
-    RENDER = True
+    RENDER = False
 
     def __init__(self, useMotion):
         self.k_up = self.k_down = 0
@@ -21,7 +21,8 @@ class GameController(object):
         import pygame
         self.pygame = pygame
         self.pygame.init()
-        self.screen = pygame.display.set_mode((Game.WIDTH, Game.HEIGHT))
+        if GameController.RENDER:
+            self.screen = pygame.display.set_mode((Game.WIDTH, Game.HEIGHT))
         self.clock = pygame.time.Clock()
 
     def start(self):
