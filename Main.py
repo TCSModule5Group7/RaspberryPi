@@ -2,9 +2,10 @@
 import errno
 import socket
 import sys
+
 from Queue import Queue
 from threading import Thread
-
+import pygame
 import Logger
 from GameController import GameController
 from TCPServer import TCPThread
@@ -23,15 +24,21 @@ class GameThread(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.running = False
-        self.controller = GameController(useMotion)
+        self.controller = GameController(True)
+
+    def start(self):
+        self.running = True
+        self.controller.start()
+        super(GameThread, self).start()
 
     def run(self):
-        self.running = True
-
-        if not q_camera_read_green.empty():
-            self.controller.loop(q_camera_read_green.get())  # Fill in coordinate from motion tracking
-        else:
-            self.controller.loop()
+        result = None
+        while self.running:
+            if not q_camera_read_green.empty():
+                result = self.controller.loop(q_camera_read_green.get())  # Fill in coordinate from motion tracking
+            else:
+                result = self.controller.loop()
+            q_tcp_write.put(result, False)
 
     def shutdown(self):
         self.running = False

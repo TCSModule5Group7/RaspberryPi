@@ -1,6 +1,5 @@
 import sys
 
-import pygame
 from pygame.locals import *
 
 from game.Game import Game
@@ -8,9 +7,10 @@ from game.Game import Game
 
 class GameController(object):
     FRAMES_PER_SECOND = 60
-    RENDER = False
+    RENDER = True
 
     def __init__(self, useMotion):
+        self.k_up = self.k_down = 0
         self.game = Game(Game.WIDTH, Game.HEIGHT)
         self.useMotion = useMotion
 
@@ -18,7 +18,9 @@ class GameController(object):
         self.state = self.GameState.STOPPED
 
         # PyGame
-        pygame.init()
+        import pygame
+        self.pygame = pygame
+        self.pygame.init()
         self.screen = pygame.display.set_mode((Game.WIDTH, Game.HEIGHT))
         self.clock = pygame.time.Clock()
 
@@ -34,22 +36,20 @@ class GameController(object):
     def loop(self, player_y=-1):
         self.clock.tick(GameController.FRAMES_PER_SECOND)
 
-        # Keyboard Handling
-        k_up = 0
-        k_down = 0
-        for event in pygame.event.get():
-            if not hasattr(event, 'key'): continue
-            down = event.type == KEYDOWN
-            if event.key == K_UP:
-                k_up = down * -1
-            elif event.key == K_DOWN:
-                k_down = down * 1
-            elif event.key == K_ESCAPE:
-                sys.exit(0)
-
-        # Input Processing
         if not self.useMotion:
-            self.game.input(0, k_down + k_up)
+            # Keyboard Handling
+            for event in self.pygame.event.get():
+                if not hasattr(event, 'key'): continue
+                down = event.type == KEYDOWN
+                if event.key == K_UP:
+                    self.k_up = down * -1
+                elif event.key == K_DOWN:
+                    self.k_down = down * 1
+                elif event.key == K_ESCAPE:
+                    sys.exit(0)
+
+            # Input Processing
+                self.game.input(0, self.k_down + self.k_up)
 
         if self.useMotion and not player_y == -1:
             self.game.paddletracking(player_y * Game.HEIGHT)
@@ -61,8 +61,8 @@ class GameController(object):
         # Render
         if GameController.RENDER:
             pixels = self.game.render()
-            pygame.surfarray.blit_array(self.screen, pixels)
-            pygame.display.flip()
+            self.pygame.surfarray.blit_array(self.screen, pixels)
+            self.pygame.display.flip()
 
         # Return gamestate
         return str(float(self.game.computer.pos.y) / Game.HEIGHT) + "/" + str(
@@ -72,7 +72,7 @@ class GameController(object):
             self.game.computer.score) + "/" + str(self.game.player.score) + "\n"
 
     def shutdown(self):
-        pygame.quit()
+        self.pygame.quit()
 
 
 def enum(*sequential, **named):
