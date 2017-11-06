@@ -71,7 +71,6 @@ class Tracker(Thread):
 
             # keep looping
             while True:
-                print("entering loop")
                 # grab the current frame
                 if pi == True:
                     for frame in self.camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
