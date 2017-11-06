@@ -8,7 +8,7 @@ from threading import Thread
 import Logger
 from GameController import GameController
 from TCPClient import TCPClient
-from TriTracker import LaptopTracker
+from tracking.tracking import Tracker
 
 # Switch to disable or enable the SPIServer.
 useSPI = False
@@ -33,13 +33,13 @@ class GameThread(Thread):
 
     def run(self):
         result = None
-        print "Running GameThread = " + self.running
+        print "Running GameThread = " + str(self.running)
         while self.running:
             calibratedY = -1
-            datagreen = q_camera_read_green.get()
-            datablue = q_camera_read_blue.get()
-            datared = q_camera_read_red.get()
-            if datablue is not None and datared is not None and datagreen is not None and (datablue - datared) is not 0:
+            if not q_camera_read_green.empty() and not q_camera_read_red.empty() and not q_camera_read_blue.empty():
+                datagreen = q_camera_read_green.get(False)
+                datablue = q_camera_read_blue.get(False)
+                datared = q_camera_read_red.get(False)
                 if datagreen < datablue:
                     datagreen = datablue
                 if datagreen > datared:
@@ -50,7 +50,6 @@ class GameThread(Thread):
                 if datared > 0:
                     calibratedY = (1 / datared) * datagreen
 
-            print "calibratedY = " + calibratedY
             result = self.controller.loop(calibratedY)
             tcp_thread.send(result)
 
@@ -98,8 +97,8 @@ if __name__ == "__main__":
         # MOTION TRACKING
         if useMotion:
             Logger.log("Initializing Motion Tracking")
-            motion_thread = LaptopTracker(q_camera_read_green, q_camera_read_blue, q_camera_read_red,
-                                          False)
+            motion_thread = Tracker(q_camera_read_green, q_camera_read_blue, q_camera_read_red,
+                                          "pi")
             Logger.log("Initialized Motion Tracking")
 
         # SPI-SERVER
