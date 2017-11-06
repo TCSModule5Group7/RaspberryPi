@@ -29,7 +29,8 @@ class TCPClient(Thread):
             self.q_read.put(buffer)
 
     def send(self, message):
-        self.socket.send(message)
+        if self.running:
+            self.socket.send(message)
 
     def shutdown(self):
         self.running = False
