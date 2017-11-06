@@ -63,7 +63,7 @@ class Tracker(Thread):
             if self.campath == "pi":
                 self.camera = PiCamera()
                 self.camera.resolution = (640, 480)
-                self.camera.framerate = 32
+                self.camera.framerate = 16
                 rawCapture = PiRGBArray(self.camera, size=(640, 480))
                 pi = True
                 time.sleep(0.1)
