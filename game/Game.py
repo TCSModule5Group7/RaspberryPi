@@ -1,27 +1,19 @@
 import itertools
 import math
-import socket
 import random
-import sys
-import Queue
+
 # import tracking
-import LaptopTracking
 import numpy as np
-import pygame
-from pygame.locals import *
 
 import physics.Collision as collision
-
 from Ball import Ball
 from ComputerPaddle import ComputerPaddle
-from Connector import Connector
 from Paddle import Paddle
 from PlayerPaddle import PlayerPaddle
 from TrackingBall import TrackingBall
 from Wall import Wall
 from physics.Manifold import Manifold
 from physics.Vec2 import Vec2
-from threading import Thread
 
 ACCELERATION = 10
 SPEED_BALL = 7
@@ -60,9 +52,8 @@ class Game(object):
                             self.player.pos.y + self.player.shape.height / 2 + self.player.velocity.y < Game.HEIGHT):
             self.player.velocity = Vec2(0, 0)
 
-    def paddletracking(self, datagreen):
-        if 1 > datagreen > 0:
-            self.player.pos.y = datagreen * Game.HEIGHT
+    def paddletracking(self, y):
+        self.player.pos.y = y
 
     def update(self):
         # Collision of ball
@@ -148,83 +139,3 @@ class Game(object):
         self.track_ball.velocity *= SPEED_RATIO_TRACKING_BALL
         self.entities.append(self.track_ball)
         return self.track_ball
-
-
-class Controller(object):
-    FRAMES_PER_SECOND = 30
-
-    def __init__(self, useConnector, useMotion):
-        # object tracking queues
-        self.q_camera_read_green = Queue.Queue()
-        self.q_camera_read_blue = Queue.Queue()
-        # object tracking thread
-        self.tracker = LaptopTracking.LaptopTracker(self.q_camera_read_green, self.q_camera_read_blue,
-                                                    False)
-
-        self.k_up = self.k_down = 0
-        self.field = Game(Game.WIDTH, Game.HEIGHT)
-
-        # Connector that sends data to the visualization
-        self.useConnector = useConnector
-        if self.useConnector:
-            try:
-                self.connector = Connector("localhost", 420)
-                self.connector.connect()
-            except socket.error:
-                self.useConnector = False
-
-        # PyGame
-        pygame.init()
-        self.screen = pygame.display.set_mode((Game.WIDTH, Game.HEIGHT))
-        self.clock = pygame.time.Clock()
-
-        self.useMotion = useMotion
-        if self.useMotion:
-            self.tracker.start()
-
-        # Loop
-        while 1:
-            self.loop(self.q_camera_read_green, self.q_camera_read_blue)
-
-    def loop(self, QueueGreen, QueueBlue):
-        self.clock.tick(60)
-        self.running = True
-
-        # Input Handling
-        for event in pygame.event.get():
-            if not hasattr(event, 'key'): continue
-            down = event.type == KEYDOWN
-            if event.key == K_UP:
-                self.k_up = down * -1
-            elif event.key == K_DOWN:
-                self.k_down = down * 1
-            elif event.key == K_ESCAPE:
-                sys.exit(0)
-        if not self.useMotion:
-            self.field.input(0, self.k_down + self.k_up)
-
-        if self.useMotion:
-            if not QueueGreen.empty():
-                datagreen = QueueGreen.get()
-                self.field.paddletracking(datagreen)
-
-        # Update the field
-        self.field.update()
-
-        # Send gamestate to visualization
-        if self.useConnector:
-            s = self.connector.update(float(self.field.computer.pos.y) / Game.HEIGHT,
-                                      float(self.field.player.pos.y) / Game.HEIGHT,
-                                      float(self.field.ball.pos.x) / Game.WIDTH,
-                                      float(self.field.ball.pos.y) / Game.HEIGHT,
-                                      self.field.computer.score,
-                                      self.field.player.score)
-            # do something with the command
-
-        # Render
-        pixels = self.field.render()
-        pygame.surfarray.blit_array(self.screen, pixels)
-        pygame.display.flip()
-
-
-Controller(False, False)

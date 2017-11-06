@@ -1,11 +1,10 @@
 import Queue
+# import tracking
+import sys
 from threading import Thread
+
 import LaptopTracking
 
-#import tracking
-import cv2
-import atexit
-import sys
 sys.path.append('/usr/local/lib/python2.7/site-packages')
 
 class TrackingTest(Thread):
