@@ -22,6 +22,7 @@ from Wall import Wall
 from physics.Manifold import Manifold
 from physics.Vec2 import Vec2
 from threading import Thread
+import TriTracker
 
 ACCELERATION = 10
 SPEED_BALL = 7
@@ -157,8 +158,9 @@ class Controller(object):
         # object tracking queues
         self.q_camera_read_green = Queue.Queue()
         self.q_camera_read_blue = Queue.Queue()
+        self.q_camera_read_red = Queue.Queue()
         # object tracking thread
-        self.tracker = LaptopTracking.LaptopTracker(self.q_camera_read_green, self.q_camera_read_blue,
+        self.tracker = TriTracker.LaptopTracker(self.q_camera_read_green, self.q_camera_read_blue, self.q_camera_read_red,
                                                     False)
 
         self.k_up = self.k_down = 0
@@ -184,10 +186,10 @@ class Controller(object):
 
         # Loop
         while 1:
-            self.loop(self.q_camera_read_green, self.q_camera_read_blue)
+            self.loop(self.q_camera_read_green, self.q_camera_read_blue, self.q_camera_read_red)
 
-    def loop(self, QueueGreen, QueueBlue):
-        self.clock.tick(60)
+    def loop(self, QueueGreen, QueueBlue, QueueRed):
+        self.clock.tick(30)
         self.running = True
 
         # Input Handling
@@ -204,9 +206,27 @@ class Controller(object):
             self.field.input(0, self.k_down + self.k_up)
 
         if self.useMotion:
-            if not QueueGreen.empty():
-                datagreen = QueueGreen.get()
-                self.field.paddletracking(datagreen)
+            datagreen = QueueGreen.get()
+            datablue = QueueBlue.get()
+            datared = QueueRed.get()
+
+            if datablue is not None and datared is not None and datagreen is not None and (datablue - datared) is not 0:
+
+                 if (datagreen < datablue):
+                    datagreen = datablue
+
+
+                 if (datagreen > datared):
+                     datagreen = datared
+
+                 datagreen -= datablue
+                 datared -= datablue
+                 calibratedY = (1 / datared) * datagreen
+                 print("green"+ str(datagreen))
+                 print("blue"+ str(datablue))
+                 print("red" + str(datared))
+                 print("Y"+ str(calibratedY))
+                 self.field.paddletracking(calibratedY)
 
         # Update the field
         self.field.update()
@@ -227,4 +247,4 @@ class Controller(object):
         pygame.display.flip()
 
 
-Controller(False, False)
+Controller(False, True)

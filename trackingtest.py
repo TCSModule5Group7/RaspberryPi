@@ -45,7 +45,7 @@ class TrackingTest(Thread):
                 print("red" + str(datared))
 
                 if (datagreen is not None and datablue is not None and datared is not None):
-                    caliGreen = (datablue - datared) * datagreen
+                    caliGreen = datagreen * (datared - datablue)
                 else:
                     continue
 

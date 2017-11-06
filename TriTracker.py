@@ -49,8 +49,8 @@ class LaptopTracker(Thread):
         blueLower = (100, 100, 100)
         blueUpper = (130, 255, 255)
 
-        RedLower = (330, 70, 50)
-        RedUpper = (30, 255, 255)
+        RedLower = (166, 84, 141)
+        RedUpper = (186, 255, 255)
 
         #print("initiating pts")
         ptsgreen = deque([self.buffersize])
