@@ -22,9 +22,10 @@ class Tracker(Thread):
         self.q_read_green = q_read_green
         self.campath = campath
         self.buffersize = 64  # buffersize
+        self.camera = None
 
-    def exit_handler(self, camera):
-        camera.release()
+    def exit_handler(self):
+        self.camera.release()
         cv2.destroyAllWindows()
         self.join()
 
@@ -51,10 +52,10 @@ class Tracker(Thread):
             # if a video path was not supplied, grab the reference
             # to the webcam
             if self.campath == "pi":
-                camera = PiCamera()
-                camera.resolution = (640, 480)
-                camera.framerate = 32
-                rawCapture = PiRGBArray(camera, size=(640, 480))
+                self.camera = PiCamera()
+                self.camera.resolution = (640, 480)
+                self.camera.framerate = 32
+                rawCapture = PiRGBArray(self.camera, size=(640, 480))
                 pi = True
                 time.sleep(0.1)
                 print("picam setup")
@@ -64,7 +65,7 @@ class Tracker(Thread):
                 print("entering loop")
                 # grab the current frame
                 if pi == True:
-                    for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+                    for frame in self.camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
                         # grab the raw NumPy array representing the image, then initialize the timestamp
                         # and occupied/unoccupied text
                         frame = frame.array
@@ -192,5 +193,5 @@ class Tracker(Thread):
 
         # cleanup the camera and close any open windows at exit
         except KeyboardInterrupt:
-            camera.release()
+            self.camera.release()
             cv2.destroyAllWindows()
