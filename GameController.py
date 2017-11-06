@@ -2,7 +2,7 @@ import sys
 
 from pygame.locals import *
 
-from game.Game import Game
+from game.Game import *
 
 
 class GameController(object):
@@ -11,7 +11,7 @@ class GameController(object):
 
     def __init__(self, useMotion):
         self.k_up = self.k_down = 0
-        self.game = Game(Game.WIDTH, Game.HEIGHT)
+        self.game = Game(WIDTH, HEIGHT)
         self.useMotion = useMotion
 
         self.GameState = enum('STOPPED', 'RUNNING')
@@ -22,7 +22,7 @@ class GameController(object):
         self.pygame = pygame
         self.pygame.init()
         if GameController.RENDER:
-            self.screen = pygame.display.set_mode((Game.WIDTH, Game.HEIGHT))
+            self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.clock = pygame.time.Clock()
 
     def start(self):
@@ -66,10 +66,10 @@ class GameController(object):
             self.pygame.display.flip()
 
         # Return gamestate
-        return str(float(self.game.computer.pos.y) / Game.HEIGHT) + "/" + str(
-            float(self.game.player.pos.y) / Game.HEIGHT) + "/" + str(
-            float(self.game.ball.pos.x) / Game.WIDTH) + "/" + str(
-            float(self.game.ball.pos.y) / Game.HEIGHT) + "/" + str(
+        return str(float(self.game.computer.pos.y) / HEIGHT) + "/" + str(
+            float(self.game.player.pos.y) / HEIGHT) + "/" + str(
+            float(self.game.ball.pos.x) / WIDTH) + "/" + str(
+            float(self.game.ball.pos.y) / HEIGHT) + "/" + str(
             self.game.computer.score) + "/" + str(self.game.player.score) + "\n"
 
     def shutdown(self):

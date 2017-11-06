@@ -18,27 +18,27 @@ from physics.Vec2 import Vec2
 ACCELERATION = 10
 SPEED_BALL = 7
 SPEED_RATIO_TRACKING_BALL = 2
+WIDTH = 1024
+HEIGHT = 768
 
 
 class Game(object):
-    WIDTH = 1080
-    HEIGHT = 720
 
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.pixels = np.zeros((Game.WIDTH, Game.HEIGHT))
+        self.pixels = np.zeros((WIDTH, HEIGHT))
 
         self.ball = Ball(920, 360)
         self.ball.velocity = Vec2(-0.707, -0.707)
         self.ball.velocity *= SPEED_BALL
         self.track_ball = self.ball
-        self.computer = ComputerPaddle(50, 360)
-        self.player = PlayerPaddle(1030, 360)
-        self.wall_north = Wall(540, 0, 1080, 20)
-        self.wall_east = Wall(1080, 360, 20, 720)
-        self.wall_south = Wall(540, 720, 1080, 20)
-        self.wall_west = Wall(0, 360, 20, 720)
+        self.computer = ComputerPaddle(0.1 * WIDTH, HEIGHT / 2)
+        self.player = PlayerPaddle(0.9 * WIDTH, HEIGHT / 2)
+        self.wall_north = Wall(WIDTH / 2, 0, WIDTH, 20)
+        self.wall_east = Wall(WIDTH, 360, 20, HEIGHT)
+        self.wall_south = Wall(WIDTH / 2, HEIGHT, WIDTH, 20)
+        self.wall_west = Wall(0, HEIGHT / 2, 20, HEIGHT)
 
         self.entities = [self.computer, self.player, self.ball, self.track_ball]
         self.walls = [self.wall_north, self.wall_east, self.wall_south, self.wall_west]
@@ -49,7 +49,7 @@ class Game(object):
         self.player.velocity = Vec2(ACCELERATION * dx, ACCELERATION * dy)
 
         if not (0 < self.player.pos.y - self.player.shape.height / 2 + self.player.velocity.y) or not (
-                            self.player.pos.y + self.player.shape.height / 2 + self.player.velocity.y < Game.HEIGHT):
+                            self.player.pos.y + self.player.shape.height / 2 + self.player.velocity.y < HEIGHT):
             self.player.velocity = Vec2(0, 0)
 
     def paddletracking(self, y):
@@ -108,7 +108,7 @@ class Game(object):
             entity.update()
 
     def render(self):
-        self.pixels = np.zeros((Game.WIDTH, Game.HEIGHT))
+        self.pixels = np.zeros((WIDTH, HEIGHT))
 
         for entity in self.entities:
             self.pixels = entity.render(self)
@@ -116,7 +116,7 @@ class Game(object):
         return self.pixels
 
     def add_point(self):
-        if self.ball.pos.x < Game.WIDTH / 2:
+        if self.ball.pos.x < WIDTH / 2:
             self.computer.add_point()
             self.ball.pos = Vec2(540, 360)
             self.ball.velocity.y = random.uniform(-0.5 * SPEED_BALL, 0.5 * SPEED_BALL)
