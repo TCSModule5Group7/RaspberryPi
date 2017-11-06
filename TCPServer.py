@@ -7,13 +7,16 @@ import Logger
 class TCPThread(Thread):
     def __init__(self, host, port, q_read, q_write):
         Thread.__init__(self)
+        self.running = False
         self.tcp_server = ThreadedTCPServer(host, port, q_read, q_write)
 
     def run(self):
+        self.running = True
         self.tcp_server.serve_forever()  # Will loop until KeyboardInterrupt or if tcp_server.shutdown() is called.
         self.cleanup()
 
     def shutdown(self):
+        self.running = False
         self.tcp_server.shutdown()
 
     def cleanup(self):
