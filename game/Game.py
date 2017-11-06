@@ -3,7 +3,7 @@ import math
 import random
 
 # import tracking
-import numpy as np
+# import numpy as np
 
 import physics.Collision as collision
 from Ball import Ball
@@ -27,7 +27,7 @@ class Game(object):
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.pixels = np.zeros((WIDTH, HEIGHT))
+        # self.pixels = np.zeros((WIDTH, HEIGHT))
 
         self.ball = Ball(920, 360)
         self.ball.velocity = Vec2(-0.707, -0.707)
@@ -107,13 +107,13 @@ class Game(object):
         for entity in self.entities:
             entity.update()
 
-    def render(self):
-        self.pixels = np.zeros((WIDTH, HEIGHT))
-
-        for entity in self.entities:
-            self.pixels = entity.render(self)
-
-        return self.pixels
+    # def render(self):
+    #     self.pixels = np.zeros((WIDTH, HEIGHT))
+    #
+    #     for entity in self.entities:
+    #         self.pixels = entity.render(self)
+    #
+    #     return self.pixels
 
     def add_point(self):
         if self.ball.pos.x < WIDTH / 2:
