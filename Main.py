@@ -36,10 +36,13 @@ class GameThread(Thread):
         print "Running GameThread = " + str(self.running)
         while self.running:
             calibratedY = -1
-            if not q_camera_read_green.empty() and not q_camera_read_red.empty() and not q_camera_read_blue.empty():
-                datagreen = q_camera_read_green.get(False)
-                datablue = q_camera_read_blue.get(False)
-                datared = q_camera_read_red.get(False)
+
+            datagreen = q_camera_read_green.get(False)
+            datablue = q_camera_read_blue.get(False)
+            datared = q_camera_read_red.get(False)
+
+            if datagreen is not None and datablue is not None and datared is not None:
+
                 if datagreen < datablue:
                     datagreen = datablue
                 if datagreen > datared:
