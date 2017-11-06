@@ -19,12 +19,12 @@ class Entity(object):
     def render(self, game):
         for x in range(self.shape.width):
             for y in range(self.shape.height):
-                if 0 < x + self.pos.x - self.shape.width / 2 < game.WIDTH \
-                        and 0 < y + self.pos.y - self.shape.height / 2 < game.HEIGHT:
+                if 0 < x + self.pos.x - self.shape.width / 2 < game.width \
+                        and 0 < y + self.pos.y - self.shape.height / 2 < game.height:
                     # if y + self.y - self.height / 2 >= Field.HEIGHT: continue
                     # if x + self.x - self.width / 2 >= Field.WIDTH: continue
                     game.pixels[
-                        int((x + self.pos.x - self.shape.width / 2) % game.WIDTH), int(
-                            (y + self.pos.y - self.shape.height / 2) % game.HEIGHT)] = 255
+                        int((x + self.pos.x - self.shape.width / 2) % game.width), int(
+                            (y + self.pos.y - self.shape.height / 2) % game.height)] = 255
 
         return game.pixels
