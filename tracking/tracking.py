@@ -123,6 +123,7 @@ class Tracker(Thread):
 
                         # GREEN
                         # only proceed if at least one contour was found
+                        Ygreen = None
                         if len(cntsgreen) > 0:
                             # find the largest contour in the mask, then use
                             # it to compute the minimum enclosing circle and
@@ -146,6 +147,7 @@ class Tracker(Thread):
                         ptsgreen.appendleft(centergreen)
                         self.q_read_green.put(Ygreen)
 
+                        YBlue = None
                         # BLUE
                         # only proceed if at least one contour was found
                         if len(cntsblue) > 0:
@@ -171,6 +173,7 @@ class Tracker(Thread):
                         self.q_read_blue.put(YBlue)
 
                         # RED
+                        YRed = None
                         if len(cntsred) > 0:
                             # find the largest contour in the mask, then use
                             # it to compute the minimum enclosing circle and
