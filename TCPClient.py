@@ -11,6 +11,7 @@ class TCPClient(Thread):
         self.q_write = q_write
         self.q_read = q_read
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.connected = False
 
     def start(self):
         self.running = True
@@ -18,6 +19,7 @@ class TCPClient(Thread):
 
     def run(self):
         self.socket.connect((self.host, self.port))
+        self.connected = True
         print "connected"
 
         while self.running:
@@ -29,7 +31,7 @@ class TCPClient(Thread):
             self.q_read.put(buffer)
 
     def send(self, message):
-        if self.running:
+        if self.connected:
             self.socket.send(message)
 
     def shutdown(self):
