@@ -153,7 +153,7 @@ class Game(object):
 class Controller(object):
     FRAMES_PER_SECOND = 30
 
-    def __init__(self):
+    def __init__(self, useConnector, useMotion):
         # object tracking queues
         self.q_camera_read_green = Queue.Queue()
         self.q_camera_read_blue = Queue.Queue()
@@ -165,19 +165,22 @@ class Controller(object):
         self.field = Game(Game.WIDTH, Game.HEIGHT)
 
         # Connector that sends data to the visualization
-        self.useConnector = True
-        try:
-            self.connector = Connector("localhost", 420)
-            self.connector.connect()
-        except socket.error:
-            self.useConnector = False
+        self.useConnector = useConnector
+        if self.useConnector:
+            try:
+                self.connector = Connector("localhost", 420)
+                self.connector.connect()
+            except socket.error:
+                self.useConnector = False
 
         # PyGame
         pygame.init()
         self.screen = pygame.display.set_mode((Game.WIDTH, Game.HEIGHT))
         self.clock = pygame.time.Clock()
 
-        self.tracker.start()
+        self.useMotion = useMotion
+        if self.useMotion:
+            self.tracker.start()
 
         # Loop
         while 1:
@@ -197,19 +200,13 @@ class Controller(object):
                 self.k_down = down * 1
             elif event.key == K_ESCAPE:
                 sys.exit(0)
-        # self.field.input(0, self.k_down + self.k_up)
+        if not self.useMotion:
+            self.field.input(0, self.k_down + self.k_up)
 
-        if not QueueGreen.empty():
-            datagreen = QueueGreen.get()
-            self.field.paddletracking(datagreen)
-        #print(datagreen)
-
-        # print("green"+ str(datagreen))
-        #datablue = QueueBlue.get()
-        # print("blue" + str(datablue))
-
-
-        #self.field.input(0, self.k_up + self.k_down)
+        if self.useMotion:
+            if not QueueGreen.empty():
+                datagreen = QueueGreen.get()
+                self.field.paddletracking(datagreen)
 
         # Update the field
         self.field.update()
@@ -230,4 +227,4 @@ class Controller(object):
         pygame.display.flip()
 
 
-Controller()
+Controller(False, False)
