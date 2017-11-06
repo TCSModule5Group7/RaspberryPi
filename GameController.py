@@ -1,7 +1,4 @@
-import sys
 import time
-
-from pygame.locals import *
 
 from game.Game import *
 
@@ -73,8 +70,8 @@ class GameController(object):
             float(self.game.ball.pos.y) / HEIGHT) + "/" + str(
             self.game.computer.score) + "/" + str(self.game.player.score) + "\n"
 
-    # def shutdown(self):
-    #     self.pygame.quit()
+        # def shutdown(self):
+        #     self.pygame.quit()
 
 
 def enum(*sequential, **named):
