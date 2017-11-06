@@ -37,9 +37,9 @@ class GameThread(Thread):
         while self.running:
             calibratedY = -1
 
-            datagreen = q_camera_read_green.get(False)
-            datablue = q_camera_read_blue.get(False)
-            datared = q_camera_read_red.get(False)
+            datagreen = q_camera_read_green.get()
+            datablue = q_camera_read_blue.get()
+            datared = q_camera_read_red.get()
 
             if datagreen is not None and datablue is not None and datared is not None:
 
