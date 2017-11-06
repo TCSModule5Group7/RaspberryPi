@@ -33,7 +33,7 @@ class GameThread(Thread):
 
     def run(self):
         result = None
-        print "Running GameThread = " self.running
+        print "Running GameThread = " + self.running
         while self.running:
             calibratedY = -1
             datagreen = q_camera_read_green.get()
