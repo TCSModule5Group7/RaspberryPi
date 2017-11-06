@@ -18,20 +18,22 @@ if useSPI:
     from SPIServer import SPIThread
 
 
-# Test code to just forward tcp to spi.
 class GameThread(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.running = False
         self.controller = GameController(True)
+        print "Created GameThread"
 
     def start(self):
         self.running = True
         self.controller.start()
+        print "Starting GameThread"
         super(GameThread, self).start()
 
     def run(self):
         result = None
+        print "Running GameThread = " self.running
         while self.running:
             calibratedY = -1
             datagreen = q_camera_read_green.get()
@@ -48,13 +50,14 @@ class GameThread(Thread):
                 if datared > 0:
                     calibratedY = (1 / datared) * datagreen
 
+            print "calibratedY = " + calibratedY
             result = self.controller.loop(calibratedY)
             tcp_thread.send(result)
 
     def shutdown(self):
         self.running = False
         self.controller.stop()
-        self.controller.shutdown()
+        # self.controller.shutdown()
 
 
 # Main method that initializes all variables and starts the TCPServer and SPIServer (if enabled).
