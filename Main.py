@@ -54,6 +54,7 @@ class GameThread(Thread):
 
             result = self.controller.loop(calibratedY)
             tcp_thread.send(result)
+            print "Y: " + str(calibratedY)
 
     def cmdStart(self):
         self.controller.start()
