@@ -44,10 +44,9 @@ class GameThread(Thread):
                 datared = q_camera_read_red.get()
             else:
                 print "calibrated blue=" + str(datablue) + ", red=" + str(datared)
-            # print("red" + str(datared) + " blue" + str(datablue) + "green" + str(datagreen))
 
             if datagreen is not None and datablue is not None and datared is not None:
-                # print("red" + str(datared) + " blue" + str(datablue) + "green" + str(datagreen))
+                print("red" + str(datared) + " blue" + str(datablue) + "green" + str(datagreen))
                 if datagreen < datablue:
                     datagreen = datablue
                 if datagreen > datared:
