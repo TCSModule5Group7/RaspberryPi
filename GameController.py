@@ -4,7 +4,7 @@ from game.Game import *
 
 
 class GameController(object):
-    FRAMES_PER_SECOND = 30
+    FRAMES_PER_SECOND = 15
     RENDER = False
 
     def __init__(self, useMotion):

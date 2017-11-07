@@ -15,8 +15,8 @@ from Wall import Wall
 from physics.Manifold import Manifold
 from physics.Vec2 import Vec2
 
-ACCELERATION = 10 * 2
-SPEED_BALL = 7 * 2
+ACCELERATION = 10 * 4
+SPEED_BALL = 7 * 4
 SPEED_RATIO_TRACKING_BALL = 2
 WIDTH = 1024
 HEIGHT = 768
