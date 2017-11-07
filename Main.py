@@ -31,13 +31,22 @@ class GameThread(Thread):
 
     def run(self):
         result = None
+        datagreen = 0
+        datared = 0
+        datablue = 0
+
         while self.running:
             calibratedY = -1
 
             print("reading queues")
             datagreen = q_camera_read_green.get()
-            datablue = q_camera_read_blue.get()
-            datared = q_camera_read_red.get()
+            if motion_thread.calibrating:
+                databluetemp = q_camera_read_blue.get()
+                dataredtemp = q_camera_read_red.get()
+                if databluetemp is not None:
+                    datablue = databluetemp
+                if dataredtemp is not None:
+                    datared = dataredtemp
             print("red" + str(datared) + " blue" + str(datablue) + "green" + str(datagreen))
 
             if datagreen is not None and datablue is not None and datared is not None:
@@ -57,6 +66,7 @@ class GameThread(Thread):
             print "Y: " + str(calibratedY)
 
     def cmdStart(self):
+        motion_thread.calibrating = False
         self.controller.start()
 
     def cmdStop(self):
