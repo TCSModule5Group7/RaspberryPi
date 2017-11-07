@@ -31,6 +31,7 @@ class GameThread(Thread):
         super(GameThread, self).start()
 
     def run(self):
+        lastFrameTime = 0
         result = None
         datared = 0
         datablue = 0
