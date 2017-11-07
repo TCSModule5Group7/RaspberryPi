@@ -2,9 +2,6 @@ import itertools
 import math
 import random
 
-# import tracking
-# import numpy as np
-
 import physics.Collision as collision
 from Ball import Ball
 from ComputerPaddle import ComputerPaddle
@@ -15,6 +12,9 @@ from Wall import Wall
 from physics.Manifold import Manifold
 from physics.Vec2 import Vec2
 
+# import tracking
+# import numpy as np
+
 ACCELERATION = 10 * 4
 SPEED_BALL = 7 * 4
 SPEED_RATIO_TRACKING_BALL = 2
@@ -23,7 +23,6 @@ HEIGHT = 768
 
 
 class Game(object):
-
     def __init__(self, width, height):
         self.width = width
         self.height = height
@@ -32,6 +31,7 @@ class Game(object):
         self.ball = Ball(920, 360)
         self.ball.velocity = Vec2(-0.707, -0.707)
         self.ball.velocity *= SPEED_BALL
+        self.ball.abs_vel = math.sqrt(math.pow(self.ball.velocity.x, 2) + math.pow(self.ball.velocity.y, 2))
         self.track_ball = self.ball
         self.computer = ComputerPaddle(0.1 * WIDTH, HEIGHT / 2)
         self.player = PlayerPaddle(0.9 * WIDTH, HEIGHT / 2)
@@ -40,6 +40,7 @@ class Game(object):
         self.wall_south = Wall(WIDTH / 2, HEIGHT, WIDTH, 20)
         self.wall_west = Wall(0, HEIGHT / 2, 20, HEIGHT)
 
+        self.paddles = [self.computer, self.player]
         self.entities = [self.computer, self.player, self.ball, self.track_ball]
         self.walls = [self.wall_north, self.wall_east, self.wall_south, self.wall_west]
 
@@ -57,7 +58,7 @@ class Game(object):
 
     def update(self):
         # Collision of ball
-        for entity in itertools.chain(self.entities, self.walls):
+        for entity in itertools.chain(self.paddles, self.walls):
             if isinstance(entity, Ball):
                 continue
             manifold = Manifold(self.ball, entity)
@@ -89,13 +90,12 @@ class Game(object):
                 collision.resolve_collision(manifold)
 
         # Give ball minimum speed
-        ratio = SPEED_BALL / math.sqrt(math.pow(self.ball.velocity.x, 2) + math.pow(self.ball.velocity.y, 2))
+        ratio = SPEED_BALL / self.ball.abs_vel
         if ratio > 1:
             self.ball.velocity.x *= ratio + 0.01
             self.ball.velocity.y *= ratio + 0.01
         if self.track_ball.velocity == Vec2(0, 0):
-            ratio = SPEED_BALL / math.sqrt(
-                math.pow(self.track_ball.velocity.x, 2) + math.pow(self.track_ball.velocity.y, 2))
+            ratio = SPEED_BALL / self.track_ball.abs_vel
             if ratio > 1:
                 self.track_ball.velocity.x *= ratio + 0.01
                 self.track_ball.velocity.y *= ratio + 0.01
@@ -120,11 +120,13 @@ class Game(object):
             self.computer.add_point()
             self.ball.pos = Vec2(540, 360)
             self.ball.velocity.y = random.uniform(-0.5 * SPEED_BALL, 0.5 * SPEED_BALL)
+            self.ball.abs_vel = math.sqrt(math.pow(self.ball.velocity.x, 2) + math.pow(self.ball.velocity.y, 2))
             self.track_ball = self.spawn_trackball()
         else:
             self.player.add_point()
             self.ball.pos = Vec2(540, 360)
             self.ball.velocity.y = random.uniform(-0.7 * SPEED_BALL, 0.7 * SPEED_BALL)
+            self.ball.abs_vel = math.sqrt(math.pow(self.ball.velocity.x, 2) + math.pow(self.ball.velocity.y, 2))
             self.track_ball = self.spawn_trackball()
         print self.get_score()
 
@@ -137,5 +139,7 @@ class Game(object):
         self.track_ball = TrackingBall(self.ball.pos.x, self.ball.pos.y)
         self.track_ball.velocity = self.ball.velocity
         self.track_ball.velocity *= SPEED_RATIO_TRACKING_BALL
+        self.track_ball.abs_vel = math.sqrt(
+            math.pow(self.track_ball.velocity.x, 2) + math.pow(self.track_ball.velocity.y, 2))
         self.entities.append(self.track_ball)
         return self.track_ball

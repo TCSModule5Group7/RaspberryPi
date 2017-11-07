@@ -60,7 +60,7 @@ class GameThread(Thread):
 
                 datagreen -= datablue
                 if datared > 0:
-                    calibratedY = (1 / (datared - datablue)) * datagreen
+                    calibratedY = -(1 / (datared - datablue)) * datagreen
 
             result = self.controller.loop(calibratedY)
             tcp_thread.send(result)

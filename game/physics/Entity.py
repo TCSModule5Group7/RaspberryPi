@@ -5,6 +5,7 @@ class Entity(object):
     def __init__(self, x, y, inv_mass, restitution, shape):
         self.pos = Vec2(x, y)
         self.velocity = Vec2(0, 0)
+        self.abs_vel = Vec2(0, 0)
         self.restitution = restitution  # Bounciness [0,1]
         self.inv_mass = inv_mass
         self.shape = shape
