@@ -27,7 +27,6 @@ class TCPClient(Thread):
             while not buffer.endswith("\n"):
                 data = self.socket.recv(1)
                 buffer += data
-            print "recv: " + buffer
             self.q_read.put(buffer)
 
     def send(self, message):

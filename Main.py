@@ -8,7 +8,7 @@ from threading import Thread
 import Logger
 from GameController import GameController
 from TCPClient import TCPClient
-from tracking.tracking import Tracker
+from TriTracker import LaptopTracker
 
 # Switch to disable or enable the SPIServer.
 useSPI = False
@@ -23,17 +23,13 @@ class GameThread(Thread):
         Thread.__init__(self)
         self.running = False
         self.controller = GameController(True)
-        print "Created GameThread"
 
     def start(self):
         self.running = True
-        self.controller.start()
-        print "Starting GameThread"
         super(GameThread, self).start()
 
     def run(self):
         result = None
-        print "Running GameThread = " + str(self.running)
         while self.running:
             calibratedY = -1
 
@@ -55,6 +51,15 @@ class GameThread(Thread):
 
             result = self.controller.loop(calibratedY)
             tcp_thread.send(result)
+
+    def cmdStart(self):
+        self.controller.start()
+
+    def cmdStop(self):
+        self.controller.stop()
+
+    def cmdReset(self):
+        self.controller.reset()
 
     def shutdown(self):
         self.running = False
@@ -100,8 +105,8 @@ if __name__ == "__main__":
         # MOTION TRACKING
         if useMotion:
             Logger.log("Initializing Motion Tracking")
-            motion_thread = Tracker(q_camera_read_green, q_camera_read_blue, q_camera_read_red,
-                                          "pi")
+            motion_thread = LaptopTracker(q_camera_read_green, q_camera_read_blue, q_camera_read_red,
+                                    False)
             Logger.log("Initialized Motion Tracking")
 
         # SPI-SERVER
@@ -152,11 +157,18 @@ if __name__ == "__main__":
 
         # INPUT
         while True:
-            line = raw_input()
-            if line == "quit":
-                break
+            # line = raw_input()
+            # if line == "quit":
+            #     break
             if not q_tcp_read.empty():
-                print "received" + q_tcp_read.get()
+                recv = q_tcp_read.get()
+                print recv
+                if recv.startswith("start"):
+                    game_thread.cmdStart()
+                if recv.startswith("stop"):
+                    game_thread.cmdStop()
+                if recv.startswith("reset"):
+                    game_thread.cmdReset()
 
     except (ValueError, IndexError):
         Logger.log_error("Usage: 'python Main.py <HOST> <PORT>'")
