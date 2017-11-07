@@ -40,15 +40,15 @@ class Tracker(Thread):
         try:
             pi = False
 
-            greenLower = (66, 122, 129)
-            greenUpper = (86, 255, 255)
+            greenLower = (25, 50, 50)
+            greenUpper = (75, 255, 255)
 
             # define lower and upper boundaries of blue
-            blueLower = (97, 100, 117)
-            blueUpper = (117, 255, 255)
+            blueLower = (100, 100, 100)
+            blueUpper = (130, 255, 255)
 
-            RedLower = (0, 90, 75) # orange
-            RedUpper = (12, 255, 255) # orange
+            RedLower = (0, 200, 75) # orange
+            RedUpper = (10, 255, 255) # orange
 
             ptsgreen = deque([self.buffersize])
             ptsblue = deque([self.buffersize])
