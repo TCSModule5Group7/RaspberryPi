@@ -157,7 +157,7 @@ class Tracker(Thread):
                         self.q_read_green.put(Ygreen)
 
 
-                        if (self.calibrating == True)
+                        if (self.calibrating == True):
                             YBlue = None
                             # BLUE
                             # only proceed if at least one contour was found
