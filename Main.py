@@ -40,8 +40,12 @@ class GameThread(Thread):
             print("reading queues")
             datagreen = q_camera_read_green.get()
             if motion_thread.calibrating:
-                datablue = q_camera_read_blue.get()
-                datared = q_camera_read_red.get()
+                databluetemp = q_camera_read_blue.get()
+                dataredtemp = q_camera_read_red.get()
+                if dataredtemp is not None:
+                    datared = dataredtemp
+                if databluetemp is not None:
+                    datablue = databluetemp
             else:
                 print "calibrated blue=" + str(datablue) + ", red=" + str(datared)
 
