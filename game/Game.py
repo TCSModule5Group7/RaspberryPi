@@ -56,7 +56,7 @@ class Game(object):
     def paddletracking(self, y):
         self.player.pos.y = y
 
-    def update(self):
+    def update(self, delta):
         # Collision of ball
         for entity in itertools.chain(self.paddles, self.walls):
             if isinstance(entity, Ball):
@@ -105,7 +105,7 @@ class Game(object):
 
         # Update positions
         for entity in self.entities:
-            entity.update()
+            entity.update(delta)
 
     # def render(self):
     #     self.pixels = np.zeros((WIDTH, HEIGHT))

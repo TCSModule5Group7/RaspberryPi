@@ -33,8 +33,8 @@ class GameController(object):
     def reset(self):
         self.resetting = True
 
-    def loop(self, player_y=-1):
-        time.sleep(1 / GameController.FRAMES_PER_SECOND)
+    def loop(self, delta, player_y=-1):
+        # time.sleep(1 / GameController.FRAMES_PER_SECOND)
         if self.resetting:
             self.game = Game(WIDTH, HEIGHT)
             self.resetting = False
@@ -59,7 +59,7 @@ class GameController(object):
 
         # Update the field
         if self.state == self.GameState.RUNNING:
-            self.game.update()
+            self.game.update(delta)
 
         # Render
         # if GameController.RENDER:

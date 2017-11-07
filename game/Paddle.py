@@ -12,8 +12,8 @@ class Paddle(Entity):
     def collision_callback(self):
         self.velocity = Vec2(0, 0)
 
-    def update(self):
-        Entity.update(self)
+    def update(self, delta):
+        Entity.update(self, delta)
 
     def add_point(self):
         self.score += 1

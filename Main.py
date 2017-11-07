@@ -2,6 +2,7 @@
 import errno
 import socket
 import sys
+import time
 from Queue import Queue
 from threading import Thread
 
@@ -62,7 +63,10 @@ class GameThread(Thread):
                 if datared > 0:
                     calibratedY = -(1 / (datared - datablue)) * datagreen
 
-            result = self.controller.loop(calibratedY)
+            currentTime = time.time()
+            dt = currentTime - lastFrameTime
+            lastFrameTime = currentTime
+            result = self.controller.loop(dt, calibratedY)
             tcp_thread.send(result)
             print "Y: " + str(calibratedY)
 
