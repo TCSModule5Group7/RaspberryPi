@@ -43,13 +43,13 @@ class GameThread(Thread):
                 databluetemp = q_camera_read_blue.get()
                 dataredtemp = q_camera_read_red.get()
                 if databluetemp is not None:
-                    datablue = databluetemp
+                    datablue = copy.deepcopy(databluetemp)
                 if dataredtemp is not None:
-                    datared = dataredtemp
-            print("red" + str(datared) + " blue" + str(datablue) + "green" + str(datagreen))
+                    datared = copy.deepcopy(dataredtemp)
+            # print("red" + str(datared) + " blue" + str(datablue) + "green" + str(datagreen))
 
             if datagreen is not None and datablue is not None and datared is not None:
-
+                print("red" + str(datared) + " blue" + str(datablue) + "green" + str(datagreen))
                 if datagreen < datablue:
                     datagreen = datablue
                 if datagreen > datared:
