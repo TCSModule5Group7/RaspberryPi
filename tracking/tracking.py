@@ -51,8 +51,8 @@ class Tracker(Thread):
             blueLower = (100, 100, 100)
             blueUpper = (130, 255, 255)
 
-            RedLower = (166, 84, 141)
-            RedUpper = (186, 255, 255)
+            RedLower = (0, 50, 80)
+            RedUpper = (20,255,255)
 
             #ptsgreen = deque([self.buffersize])
             #ptsblue = deque([self.buffersize])
