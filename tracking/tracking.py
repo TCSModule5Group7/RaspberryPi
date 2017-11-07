@@ -42,8 +42,8 @@ class Tracker(Thread):
         try:
             pi = False
 
-            greenLower = (30, 122, 129)
-            greenUpper = (90, 255, 255)
+            greenLower = (25, 50, 50)
+            greenUpper = (75, 255, 255)
 
             # define lower and upper boundaries of blue
             blueLower = (97, 100, 117)

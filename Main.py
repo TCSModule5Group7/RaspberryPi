@@ -31,7 +31,6 @@ class GameThread(Thread):
 
     def run(self):
         result = None
-        datagreen = 0
         datared = 0
         datablue = 0
 
@@ -57,7 +56,8 @@ class GameThread(Thread):
                     datagreen = datared
 
                 datagreen -= datablue
-                datared -= datablue
+                if motion_thread.calibrating:
+                    datared -= datablue
                 if datared > 0:
                     calibratedY = (1 / datared) * datagreen
 
