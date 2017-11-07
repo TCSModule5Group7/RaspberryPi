@@ -55,7 +55,7 @@ class GameController(object):
         #     self.game.input(0, self.k_down + self.k_up)
 
         if self.useMotion and not player_y == -1:
-            self.game.paddletracking(player_y * Game.HEIGHT)
+            self.game.paddletracking(player_y * HEIGHT)
 
         # Update the field
         if self.state == self.GameState.RUNNING:

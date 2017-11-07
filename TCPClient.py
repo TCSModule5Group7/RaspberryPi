@@ -10,7 +10,7 @@ class TCPClient(Thread):
         self.port = port
         self.q_write = q_write
         self.q_read = q_read
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.connected = False
 
     def start(self):
@@ -23,10 +23,9 @@ class TCPClient(Thread):
         print "connected"
 
         while self.running:
-            buffer = ''
-            while not buffer.endswith("\n"):
-                data = self.socket.recv(1)
-                buffer += data
+            buffer = self.socket.recv(53)
+            buffer = buffer.split('\r')[0]
+            print "recv: " + str(buffer)
             self.q_read.put(buffer)
 
     def send(self, message):

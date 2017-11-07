@@ -8,7 +8,8 @@ from threading import Thread
 import Logger
 from GameController import GameController
 from TCPClient import TCPClient
-from tracking.tracking import Tracker
+# from tracking.tracking import Tracker
+from TriTracker import LaptopTracker
 
 # Switch to disable or enable the SPIServer.
 useSPI = False
@@ -104,8 +105,8 @@ if __name__ == "__main__":
         # MOTION TRACKING
         if useMotion:
             Logger.log("Initializing Motion Tracking")
-            motion_thread = Tracker(q_camera_read_green, q_camera_read_blue, q_camera_read_red,
-                                    "pi")
+            motion_thread = LaptopTracker(q_camera_read_green, q_camera_read_blue, q_camera_read_red,
+                                    False)
             Logger.log("Initialized Motion Tracking")
 
         # SPI-SERVER
@@ -163,6 +164,7 @@ if __name__ == "__main__":
                 recv = q_tcp_read.get()
                 print recv
                 if recv.startswith("start"):
+                    print "START"
                     game_thread.cmdStart()
                 if recv.startswith("stop"):
                     game_thread.cmdStop()
