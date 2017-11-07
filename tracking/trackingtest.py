@@ -3,6 +3,7 @@ import Queue
 import sys
 from threading import Thread
 import tracking
+import time
 #import LaptopTracking
 #import TriTracker
 
@@ -36,6 +37,7 @@ class TrackingTest(Thread):
     def listen(self):
         while self.running:
             try:
+                print(time.time())
                 datagreen = self.q_camera_read_green.get()
                 print("green"+ str(datagreen))
                 datablue = self.q_camera_read_blue.get()
