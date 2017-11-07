@@ -54,9 +54,9 @@ class Tracker(Thread):
             RedLower = (166, 84, 141)
             RedUpper = (186, 255, 255)
 
-            ptsgreen = deque([self.buffersize])
-            ptsblue = deque([self.buffersize])
-            ptsred = deque([self.buffersize])
+            #ptsgreen = deque([self.buffersize])
+            #ptsblue = deque([self.buffersize])
+            #ptsred = deque([self.buffersize])
 
 
 
@@ -66,9 +66,9 @@ class Tracker(Thread):
             # to the webcam
             if self.campath == "pi":
                 self.camera = PiCamera()
-                self.camera.resolution = (600, 450)
+                self.camera.resolution = (320, 240)
                 self.camera.framerate = 16
-                rawCapture = PiRGBArray(self.camera, size=(600, 450))
+                rawCapture = PiRGBArray(self.camera, size=(320, 240))
                 pi = True
                 time.sleep(0.1)
                 print("picam setup")
@@ -84,7 +84,7 @@ class Tracker(Thread):
 
                         # resize the frame, blur it, and convert it to the HSV
                         # color space
-                        framegreen = imutils.resize(frame, width=600)
+                        framegreen = imutils.resize(frame, width=320)
                         hsvgreen = cv2.cvtColor(framegreen, cv2.COLOR_BGR2HSV)
                         maskgreen = cv2.inRange(hsvgreen, greenLower, greenUpper)
                         maskgreen = cv2.erode(maskgreen, None, iterations=2)
@@ -98,8 +98,8 @@ class Tracker(Thread):
                             frameblue = framegreen.copy()
                             framered = framegreen.copy()
 
-                            frameblue = imutils.resize(frame, width=600)
-                            framered = imutils.resize(frame, width= 600)
+                            frameblue = imutils.resize(frame, width=320)
+                            framered = imutils.resize(frame, width= 320)
 
                             # blurred = cv2.GaussianBlur(framegreen, (11, 11), 0)
 
@@ -154,7 +154,7 @@ class Tracker(Thread):
                             """
                         # update the points queue
                         # print("centergreen" + str(centergreen))
-                        ptsgreen.appendleft(centergreen)
+                        #ptsgreen.appendleft(centergreen)
                         self.q_read_green.put(Ygreen)
 
 
@@ -182,7 +182,7 @@ class Tracker(Thread):
                                     cv2.circle(frameblue, centerblue, 5, (0, 0, 255), -1)
                                     # only proceed if at least one contour was found
                                 """
-                            ptsblue.appendleft(centerblue)
+                            #ptsblue.appendleft(centerblue)
                             self.q_read_blue.put(YBlue)
 
                             # RED
@@ -207,7 +207,7 @@ class Tracker(Thread):
                                     cv2.circle(frameblue, centerblue, 5, (0, 0, 255), -1)
                                     """
                             # update the points queue
-                                ptsred.appendleft(centerRed)
+                                #ptsred.appendleft(centerRed)
                                 self.q_read_red.put(YRed)
                         else:
                             self.q_read_blue.put(None)
