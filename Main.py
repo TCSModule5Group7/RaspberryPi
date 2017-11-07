@@ -79,7 +79,6 @@ if __name__ == "__main__":
     try:
         # VARIABLES
         Logger.log("Initializing variables")
-
         host = sys.argv[1]
         port = int(sys.argv[2])
         if useSPI:
@@ -171,7 +170,9 @@ if __name__ == "__main__":
                     game_thread.cmdReset()
 
     except (ValueError, IndexError):
-        Logger.log_error("Usage: 'python Main.py <HOST> <PORT>'")
+        print sys.argv[0]
+        path, filename = str(sys.argv[0]).rsplit('/', 1)
+        Logger.log_error("Usage: 'python " + filename + " <HOST> <PORT>'")
 
     except socket.error as socket_error:
         if socket_error.errno == errno.EADDRINUSE:

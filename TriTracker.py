@@ -3,27 +3,24 @@
 # python ball_tracking.py
 
 # import the necessary packages
+import atexit
 from collections import deque
 from threading import Thread
-import numpy as np
-import time
-import argparse
-import imutils
+
 import cv2
-import Queue
-import atexit
-from decimal import Decimal
+import imutils
+import numpy as np
 
 
 class LaptopTracker(Thread):
-    def __init__(self, q_read_green, q_read_blue, q_read_red, campath):
+    def __init__(self, q_read_green, q_read_blue, q_read_red, camera_path):
         Thread.__init__(self)
-        #print("initiated thread")
+        # print("initiated thread")
         self.q_read_blue = q_read_blue
         self.q_read_green = q_read_green
         self.q_read_red = q_read_red
-        self.campath = campath
-        self.buffersize = 64  # buffersize
+        self.camera_path = camera_path
+        self.buffer_size = 64  # buffer_size
         self.camera = None
 
     def exit_handler(self):
@@ -41,33 +38,33 @@ class LaptopTracker(Thread):
         # ball in the HSV color space, then initialize the
         # list of tracked points
 
-        #print("initiating colors")
-        greenLower = (30, 50, 50)
-        greenUpper = (75, 255, 255)
+        # print("initiating colors")
+        green_lower = (30, 50, 50)
+        green_upper = (75, 255, 255)
 
         # define lower and upper boundaries of blue
-        blueLower = (100, 100, 100)
-        blueUpper = (130, 255, 255)
+        blue_lower = (100, 100, 100)
+        blue_upper = (130, 255, 255)
 
-        RedLower = (166, 84, 141)
-        RedUpper = (186, 255, 255)
+        red_lower = (166, 84, 141)
+        red_upper = (186, 255, 255)
 
-        #print("initiating pts")
-        ptsgreen = deque([self.buffersize])
-        ptsblue = deque([self.buffersize])
-        ptsred = deque([self.buffersize])
+        # print("initiating pts")
+        points_green = deque([self.buffer_size])
+        points_blue = deque([self.buffer_size])
+        points_red = deque([self.buffer_size])
 
         # if a video path was not supplied, grab the reference
-        # to the webcam
-        #print("print getting video")
-        if not self.campath:
+        # to the web-cam
+        # print("print getting video")
+        if not self.camera_path:
             self.camera = cv2.VideoCapture(0)
 
         # otherwise, grab a reference to the video file
         else:
-            self.camera = cv2.VideoCapture(self.campath)
+            self.camera = cv2.VideoCapture(self.camera_path)
 
-        #print("video selected")
+        # print("video selected")
         # keep looping
         while True:
             # grab the current frame
@@ -75,188 +72,186 @@ class LaptopTracker(Thread):
 
             # if we are viewing a video and we did not grab a frame,
             # then we have reached the end of the video
-            if self.campath and not grabbed:
+            if self.camera_path and not grabbed:
                 break
 
             # resize the frame, blur it, and convert it to the HSV
             # color space
 
-            #print("initiating frames")
-            framegreen = imutils.resize(frame, width=600)
-            frameblue = framegreen.copy()
-            framered = framegreen.copy()
+            # print("initiating frames")
+            frame_green = imutils.resize(frame, width=600)
+            frame_blue = frame_green.copy()
+            frame_red = frame_green.copy()
 
-            frameblue = imutils.resize(frame, width=600)
-            framered = imutils.resize(frame, width=600)
-            # blurred = cv2.GaussianBlur(framegreen, (11, 11), 0)
+            frame_blue = imutils.resize(frame, width=600)
+            frame_red = imutils.resize(frame, width=600)
+            # blurred = cv2.GaussianBlur(frame_green, (11, 11), 0)
 
-            hsvgreen = cv2.cvtColor(framegreen, cv2.COLOR_BGR2HSV)
-            hsvblue = cv2.cvtColor(frameblue, cv2.COLOR_BGR2HSV)
-            hsvred = cv2.cvtColor(framered, cv2.COLOR_BGR2HSV)
+            hsv_green = cv2.cvtColor(frame_green, cv2.COLOR_BGR2HSV)
+            hsv_blue = cv2.cvtColor(frame_blue, cv2.COLOR_BGR2HSV)
+            hsv_red = cv2.cvtColor(frame_red, cv2.COLOR_BGR2HSV)
 
             # construct a mask for the color "green", then perform
             # a series of dilations and erosions to remove any small
             # blobs left in the mask
 
-            #print("initiating masks")
-            maskgreen = cv2.inRange(hsvgreen, greenLower, greenUpper)
-            maskgreen = cv2.erode(maskgreen, None, iterations=2)
-            maskgreen = cv2.dilate(maskgreen, None, iterations=2)
+            # print("initiating masks")
+            mask_green = cv2.inRange(hsv_green, green_lower, green_upper)
+            mask_green = cv2.erode(mask_green, None, iterations=2)
+            mask_green = cv2.dilate(mask_green, None, iterations=2)
 
-            maskblue = cv2.inRange(hsvblue, blueLower, blueUpper)
-            maskblue = cv2.erode(maskblue, None, iterations=2)
-            maskblue = cv2.dilate(maskblue, None, iterations=2)
+            mask_blue = cv2.inRange(hsv_blue, blue_lower, blue_upper)
+            mask_blue = cv2.erode(mask_blue, None, iterations=2)
+            mask_blue = cv2.dilate(mask_blue, None, iterations=2)
 
-            maskred = cv2.inRange(hsvred, RedLower, RedUpper)
-            maskred = cv2.erode(maskred, None, iterations=2)
-            maskred = cv2.dilate(maskred, None, iterations=2)
+            mask_red = cv2.inRange(hsv_red, red_lower, red_upper)
+            mask_red = cv2.erode(mask_red, None, iterations=2)
+            mask_red = cv2.dilate(mask_red, None, iterations=2)
 
             # find contours in the mask and initialize the current
             # (x, y) center of the ball
-            #print("initiating contours")
-            cntsgreen = cv2.findContours(maskgreen.copy(), cv2.RETR_EXTERNAL,
-                                         cv2.CHAIN_APPROX_SIMPLE)[-2]
-            centergreen = None
+            # print("initiating contours")
+            contours_green = cv2.findContours(mask_green.copy(), cv2.RETR_EXTERNAL,
+                                              cv2.CHAIN_APPROX_SIMPLE)[-2]
+            center_green = None
 
-            cntsblue = cv2.findContours(maskblue.copy(), cv2.RETR_EXTERNAL,
-                                        cv2.CHAIN_APPROX_SIMPLE)[-2]
-            centerblue = None
+            contours_blue = cv2.findContours(mask_blue.copy(), cv2.RETR_EXTERNAL,
+                                             cv2.CHAIN_APPROX_SIMPLE)[-2]
+            center_blue = None
 
-            cntsred = cv2.findContours(maskred.copy(), cv2.RETR_EXTERNAL,
-                                       cv2.CHAIN_APPROX_SIMPLE)[-2]
-            centerRed = None
+            contours_red = cv2.findContours(mask_red.copy(), cv2.RETR_EXTERNAL,
+                                            cv2.CHAIN_APPROX_SIMPLE)[-2]
+            center_red = None
 
-            YBlue = None
-            Ygreen = None
-            YRed = None
+            y_blue = None
+            y_green = None
+            y_red = None
 
-            #GREEN
+            # GREEN
             # only proceed if at least one contour was found
-            if len(cntsgreen) > 0:
+            if len(contours_green) > 0:
                 # find the largest contour in the mask, then use
                 # it to compute the minimum enclosing circle and
                 # centroid
-                c = max(cntsgreen, key=cv2.contourArea)
-                ((x, y), radius) = cv2.minEnclosingCircle(c)
-                M = cv2.moments(c)
-                centergreen = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-                Ygreen = (float(centergreen[1]) / 450)
+                contour = max(contours_green, key=cv2.contourArea)
+                ((x, y), radius) = cv2.minEnclosingCircle(contour)
+                moment = cv2.moments(contour)
+                center_green = (int(moment["m10"] / moment["m00"]), int(moment["m01"] / moment["m00"]))
+                y_green = (float(center_green[1]) / 450)
 
                 # only proceed if the radius meets a minimum size
                 if radius > 10:
                     # draw the circle and centroid on the frame,
                     # then update the list of tracked points
-                    cv2.circle(framegreen, (int(x), int(y)), int(radius),
+                    cv2.circle(frame_green, (int(x), int(y)), int(radius),
                                (0, 255, 255), 2)
-                    cv2.circle(framegreen, centergreen, 5, (0, 0, 255), -1)
+                    cv2.circle(frame_green, center_green, 5, (0, 0, 255), -1)
 
             # update the points queue
-            #print("centergreen" + str(centergreen))
-            ptsgreen.appendleft(centergreen)
-            self.q_read_green.put(Ygreen)
+            # print("center_green" + str(center_green))
+            points_green.appendleft(center_green)
+            self.q_read_green.put(y_green)
 
-
-            #BLUE
+            # BLUE
             # only proceed if at least one contour was found
-            if len(cntsblue) > 0:
+            if len(contours_blue) > 0:
                 # find the largest contour in the mask, then use
                 # it to compute the minimum enclosing circle and
                 # centroid
-                c = max(cntsblue, key=cv2.contourArea)
-                ((x, y), radius) = cv2.minEnclosingCircle(c)
-                M = cv2.moments(c)
-                centerblue = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-                YBlue = (float(centerblue[1]) / 450)
+                contour = max(contours_blue, key=cv2.contourArea)
+                ((x, y), radius) = cv2.minEnclosingCircle(contour)
+                moment = cv2.moments(contour)
+                center_blue = (int(moment["m10"] / moment["m00"]), int(moment["m01"] / moment["m00"]))
+                y_blue = (float(center_blue[1]) / 450)
 
                 # only proceed if the radius meets a minimum size
                 if radius > 10:
                     # draw the circle and centroid on the frame,
                     # then update the list of tracked points
-                    cv2.circle(frameblue, (int(x), int(y)), int(radius),
+                    cv2.circle(frame_blue, (int(x), int(y)), int(radius),
                                (0, 255, 255), 2)
-                    cv2.circle(frameblue, centerblue, 5, (0, 0, 255), -1)
+                    cv2.circle(frame_blue, center_blue, 5, (0, 0, 255), -1)
                     # only proceed if at least one contour was found
 
-            ptsblue.appendleft(centerblue)
-            self.q_read_blue.put(YBlue)
+            points_blue.appendleft(center_blue)
+            self.q_read_blue.put(y_blue)
 
-            #RED
-            if len(cntsred) > 0:
+            # RED
+            if len(contours_red) > 0:
                 # find the largest contour in the mask, then use
                 # it to compute the minimum enclosing circle and
                 # centroid
-                c = max(cntsred, key=cv2.contourArea)
-                ((x, y), radius) = cv2.minEnclosingCircle(c)
-                M = cv2.moments(c)
-                centerRed = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
-                YRed = (float(centerRed[1]) / 450)
+                contour = max(contours_red, key=cv2.contourArea)
+                ((x, y), radius) = cv2.minEnclosingCircle(contour)
+                moment = cv2.moments(contour)
+                center_red = (int(moment["m10"] / moment["m00"]), int(moment["m01"] / moment["m00"]))
+                y_red = (float(center_red[1]) / 450)
 
                 # only proceed if the radius meets a minimum size
                 if radius > 10:
                     # draw the circle and centroid on the frame,
                     # then update the list of tracked points
-                    cv2.circle(frameblue, (int(x), int(y)), int(radius),
+                    cv2.circle(frame_blue, (int(x), int(y)), int(radius),
                                (0, 255, 255), 2)
-                    cv2.circle(frameblue, centerblue, 5, (0, 0, 255), -1)
+                    cv2.circle(frame_blue, center_blue, 5, (0, 0, 255), -1)
 
             # update the points queue
-            ptsred.appendleft(centerRed)
-            self.q_read_red.put(YRed)
+            points_red.appendleft(center_red)
+            self.q_read_red.put(y_red)
 
-            #print("loop over green points")
+            # print("loop over green points")
             # loop over the set of tracked points
-            for i in xrange(1, len(ptsgreen)):
+            for i in xrange(1, len(points_green)):
                 # if either of the tracked points are None, ignore
                 # them
-                if ptsgreen[i - 1] is None or ptsgreen[i] is None:
+                if points_green[i - 1] is None or points_green[i] is None:
                     continue
 
                 # otherwise, compute the thickness of the line and
                 # draw the connecting lines
-                thickness = int(np.sqrt(self.buffersize / float(i + 1)) * 2.5)
+                thickness = int(np.sqrt(self.buffer_size / float(i + 1)) * 2.5)
                 try:
-                    cv2.line(framegreen, ptsgreen[i - 1], ptsgreen[i], (0, 0, 255), thickness)
+                    cv2.line(frame_green, points_green[i - 1], points_green[i], (0, 0, 255), thickness)
                 except:
                     continue
 
-            #print("loop over blue points")
-            for i in xrange(1, len(ptsblue)):
+            # print("loop over blue points")
+            for i in xrange(1, len(points_blue)):
                 # if either of the tracked points are None, ignore
                 # them
-                if ptsblue[i - 1] is None or ptsblue[i] is None:
+                if points_blue[i - 1] is None or points_blue[i] is None:
                     continue
 
                 # otherwise, compute the thickness of the line and
                 # draw the connecting lines
-                thickness = int(np.sqrt(self.buffersize / float(i + 1)) * 2.5)
+                thickness = int(np.sqrt(self.buffer_size / float(i + 1)) * 2.5)
                 try:
-                    cv2.line(frameblue, ptsblue[i - 1], ptsblue[i], (0, 0, 255), thickness)
+                    cv2.line(frame_blue, points_blue[i - 1], points_blue[i], (0, 0, 255), thickness)
                 except:
                     continue
 
-
-            for i in xrange(1, len(ptsred)):
+            for i in xrange(1, len(points_red)):
                 # if either of the tracked points are None, ignore
                 # them
-                if ptsred[i - 1] is None or ptsred[i] is None:
+                if points_red[i - 1] is None or points_red[i] is None:
                     continue
 
                 # otherwise, compute the thickness of the line and
                 # draw the connecting lines
-                thickness = int(np.sqrt(self.buffersize / float(i + 1)) * 2.5)
+                thickness = int(np.sqrt(self.buffer_size / float(i + 1)) * 2.5)
                 try:
-                    cv2.line(framered, ptsred[i - 1], ptsred[i], (0, 0, 255), thickness)
+                    cv2.line(frame_red, points_red[i - 1], points_red[i], (0, 0, 255), thickness)
                 except:
                     continue
 
-            #print("putting masks together")
+            # print("putting masks together")
             # show the frame to our screen
-            mask = maskblue + maskgreen + maskred
-            res = cv2.bitwise_and(framegreen, frameblue, framered, mask)
-            #cv2.imshow("frame", res)
-            cv2.imshow("Frameblue", framered)
+            mask = mask_blue + mask_green + mask_red
+            res = cv2.bitwise_and(frame_green, frame_blue, frame_red, mask)
+            # cv2.imshow("frame", res)
+            cv2.imshow("tracking", frame_red)
             key = cv2.waitKey(1) & 0xFF
-            #print("done with masks")
+            # print("done with masks")
 
             # if the 'q' key is pressed, stop the loop
             if key == ord("q"):
