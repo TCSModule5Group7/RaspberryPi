@@ -2,17 +2,17 @@
 # python ball_tracking.py --video ball_tracking_example.mp4
 # python ball_tracking.py
 
-# import the necessary packages
-from collections import deque
-from threading import Thread
-from picamera.array import PiRGBArray
-from picamera import PiCamera
-import numpy as np
-import time
-import imutils
-import cv2
 import Queue
 import atexit
+import cv2
+import imutils
+import numpy as np
+import time
+# import the necessary packages
+from collections import deque
+from picamera import PiCamera
+from picamera.array import PiRGBArray
+from threading import Thread
 
 
 class Tracker(Thread):
@@ -40,23 +40,19 @@ class Tracker(Thread):
         try:
             pi = False
 
-            greenLower = (25, 50, 50)
-            greenUpper = (75, 255, 255)
+            greenLower = (66, 122, 129)
+            greenUpper = (86, 255, 255)
 
             # define lower and upper boundaries of blue
-            blueLower = (100, 100, 100)
-            blueUpper = (130, 255, 255)
+            blueLower = (97, 100, 117)
+            blueUpper = (117, 255, 255)
 
-            RedLower = (0, 50, 80)
-            RedUpper = (20,255,255)
+            RedLower = (0, 90, 75) # orange
+            RedUpper = (12, 255, 255) # orange
 
             ptsgreen = deque([self.buffersize])
             ptsblue = deque([self.buffersize])
             ptsred = deque([self.buffersize])
-
-
-
-
 
             # if a video path was not supplied, grab the reference
             # to the webcam
@@ -86,7 +82,7 @@ class Tracker(Thread):
                         framered = framegreen.copy()
 
                         frameblue = imutils.resize(frame, width=320)
-                        framered = imutils.resize(frame, width= 320)
+                        framered = imutils.resize(frame, width=320)
 
                         # blurred = cv2.GaussianBlur(framegreen, (11, 11), 0)
                         hsvgreen = cv2.cvtColor(framegreen, cv2.COLOR_BGR2HSV)
