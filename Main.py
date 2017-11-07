@@ -34,6 +34,7 @@ class GameThread(Thread):
         while self.running:
             calibratedY = -1
 
+            print("reading queues")
             datagreen = q_camera_read_green.get()
             datablue = q_camera_read_blue.get()
             datared = q_camera_read_red.get()
