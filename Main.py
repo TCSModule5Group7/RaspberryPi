@@ -105,7 +105,7 @@ if __name__ == "__main__":
         if useMotion:
             Logger.log("Initializing Motion Tracking")
             motion_thread = Tracker(q_camera_read_green, q_camera_read_blue, q_camera_read_red,
-                                    False)
+                                    "pi")
             Logger.log("Initialized Motion Tracking")
 
         # SPI-SERVER
