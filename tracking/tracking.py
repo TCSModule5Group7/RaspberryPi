@@ -204,9 +204,11 @@ class Tracker(Thread):
                                     cv2.circle(frameblue, centerblue, 5, (0, 0, 255), -1)
 
                             # update the points queue
-                            ptsred.appendleft(centerRed)
-                            self.q_read_red.put(YRed)
-
+                                ptsred.appendleft(centerRed)
+                                self.q_read_red.put(YRed)
+                        else:
+                            self.q_read_blue.put(None)
+                            self.q_read_red.put(None)
                         rawCapture.truncate(0)
 
 
