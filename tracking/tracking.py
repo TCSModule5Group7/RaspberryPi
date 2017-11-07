@@ -66,9 +66,9 @@ class Tracker(Thread):
             # to the webcam
             if self.campath == "pi":
                 self.camera = PiCamera()
-                self.camera.resolution = (640, 480)
+                self.camera.resolution = (600, 450)
                 self.camera.framerate = 16
-                rawCapture = PiRGBArray(self.camera, size=(640, 480))
+                rawCapture = PiRGBArray(self.camera, size=(600, 450))
                 pi = True
                 time.sleep(0.1)
                 print("picam setup")
@@ -143,6 +143,7 @@ class Tracker(Thread):
                             centergreen = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
                             Ygreen = (float(centergreen[1]) / 450)
 
+                            """
                             # only proceed if the radius meets a minimum size
                             if radius > 10:
                                 # draw the circle and centroid on the frame,
@@ -150,7 +151,7 @@ class Tracker(Thread):
                                 cv2.circle(framegreen, (int(x), int(y)), int(radius),
                                            (0, 255, 255), 2)
                                 cv2.circle(framegreen, centergreen, 5, (0, 0, 255), -1)
-
+                            """
                         # update the points queue
                         # print("centergreen" + str(centergreen))
                         ptsgreen.appendleft(centergreen)
@@ -172,6 +173,7 @@ class Tracker(Thread):
                                 YBlue = (float(centerblue[1]) / 450)
 
                                 # only proceed if the radius meets a minimum size
+                                """
                                 if radius > 10:
                                     # draw the circle and centroid on the frame,
                                     # then update the list of tracked points
@@ -179,7 +181,7 @@ class Tracker(Thread):
                                                (0, 255, 255), 2)
                                     cv2.circle(frameblue, centerblue, 5, (0, 0, 255), -1)
                                     # only proceed if at least one contour was found
-
+                                """
                             ptsblue.appendleft(centerblue)
                             self.q_read_blue.put(YBlue)
 
@@ -195,6 +197,7 @@ class Tracker(Thread):
                                 centerRed = (int(M["m10"] / M["m00"]), int(M["m01"] / M["m00"]))
                                 YRed = (float(centerRed[1]) / 450)
 
+                                """
                                 # only proceed if the radius meets a minimum size
                                 if radius > 10:
                                     # draw the circle and centroid on the frame,
@@ -202,7 +205,7 @@ class Tracker(Thread):
                                     cv2.circle(frameblue, (int(x), int(y)), int(radius),
                                                (0, 255, 255), 2)
                                     cv2.circle(frameblue, centerblue, 5, (0, 0, 255), -1)
-
+                                    """
                             # update the points queue
                                 ptsred.appendleft(centerRed)
                                 self.q_read_red.put(YRed)
