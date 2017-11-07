@@ -23,6 +23,7 @@ class LaptopTracker(Thread):
         self.buffer_size = 64  # buffer_size
         self.camera = None
 
+
     def exit_handler(self):
         self.camera.release()
         cv2.destroyAllWindows()
@@ -129,6 +130,7 @@ class LaptopTracker(Thread):
 
             # GREEN
             # only proceed if at least one contour was found
+            y_green = None
             if len(contours_green) > 0:
                 # find the largest contour in the mask, then use
                 # it to compute the minimum enclosing circle and
@@ -152,6 +154,7 @@ class LaptopTracker(Thread):
             points_green.appendleft(center_green)
             self.q_read_green.put(y_green)
 
+            y_blue = None
             # BLUE
             # only proceed if at least one contour was found
             if len(contours_blue) > 0:
@@ -176,6 +179,7 @@ class LaptopTracker(Thread):
             points_blue.appendleft(center_blue)
             self.q_read_blue.put(y_blue)
 
+            y_red = None
             # RED
             if len(contours_red) > 0:
                 # find the largest contour in the mask, then use
