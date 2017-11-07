@@ -4,7 +4,7 @@ from game.Game import *
 
 
 class GameController(object):
-    FRAMES_PER_SECOND = 60
+    FRAMES_PER_SECOND = 30
     RENDER = False
 
     def __init__(self, useMotion):
@@ -14,6 +14,7 @@ class GameController(object):
 
         self.GameState = enum('STOPPED', 'RUNNING')
         self.state = self.GameState.STOPPED
+        self.resetting = False
 
         # PyGame
         # import pygame
@@ -30,10 +31,13 @@ class GameController(object):
         self.state = self.GameState.STOPPED
 
     def reset(self):
-        self.game = Game(Game.WIDTH, Game.HEIGHT)
+        self.resetting = True
 
     def loop(self, player_y=-1):
         time.sleep(1 / GameController.FRAMES_PER_SECOND)
+        if self.resetting:
+            self.game = Game(WIDTH, HEIGHT)
+            self.resetting = False
 
         # if not self.useMotion:
         #     # Keyboard Handling

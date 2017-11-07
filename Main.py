@@ -23,17 +23,13 @@ class GameThread(Thread):
         Thread.__init__(self)
         self.running = False
         self.controller = GameController(True)
-        print "Created GameThread"
 
     def start(self):
         self.running = True
-        self.controller.start()
-        print "Starting GameThread"
         super(GameThread, self).start()
 
     def run(self):
         result = None
-        print "Running GameThread = " + str(self.running)
         while self.running:
             calibratedY = -1
 
@@ -56,6 +52,15 @@ class GameThread(Thread):
             result = self.controller.loop(calibratedY)
             tcp_thread.send(result)
 
+    def cmdStart(self):
+        self.controller.start()
+
+    def cmdStop(self):
+        self.controller.stop()
+
+    def cmdReset(self):
+        self.controller.reset()
+
     def shutdown(self):
         self.running = False
         self.controller.stop()
@@ -74,7 +79,6 @@ if __name__ == "__main__":
     try:
         # VARIABLES
         Logger.log("Initializing variables")
-
         host = sys.argv[1]
         port = int(sys.argv[2])
         if useSPI:
@@ -101,7 +105,7 @@ if __name__ == "__main__":
         if useMotion:
             Logger.log("Initializing Motion Tracking")
             motion_thread = Tracker(q_camera_read_green, q_camera_read_blue, q_camera_read_red,
-                                          "pi")
+                                    "pi")
             Logger.log("Initialized Motion Tracking")
 
         # SPI-SERVER
@@ -152,14 +156,23 @@ if __name__ == "__main__":
 
         # INPUT
         while True:
-            line = raw_input()
-            if line == "quit":
-                break
+            # line = raw_input()
+            # if line == "quit":
+            #     break
             if not q_tcp_read.empty():
-                print "received" + q_tcp_read.get()
+                recv = q_tcp_read.get()
+                print recv
+                if recv.startswith("start"):
+                    game_thread.cmdStart()
+                if recv.startswith("stop"):
+                    game_thread.cmdStop()
+                if recv.startswith("reset"):
+                    game_thread.cmdReset()
 
     except (ValueError, IndexError):
-        Logger.log_error("Usage: 'python Main.py <HOST> <PORT>'")
+        print sys.argv[0]
+        path, filename = str(sys.argv[0]).rsplit('/', 1)
+        Logger.log_error("Usage: 'python " + filename + " <HOST> <PORT>'")
 
     except socket.error as socket_error:
         if socket_error.errno == errno.EADDRINUSE:
