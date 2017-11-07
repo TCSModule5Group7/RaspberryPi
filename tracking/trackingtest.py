@@ -2,9 +2,10 @@ import Queue
 # import tracking
 import sys
 from threading import Thread
-
-import LaptopTracking
-import TriTracker
+import tracking
+import time
+#import LaptopTracking
+#import TriTracker
 
 sys.path.append('/usr/local/lib/python2.7/site-packages')
 
@@ -16,9 +17,9 @@ class TrackingTest(Thread):
         self.q_camera_read_blue = Queue.Queue()
         self.q_camera_read_red = Queue.Queue()
 
-        #self.tracker = tracking.Tracker(self.q_camera_read_green, self.q_camera_read_blue,
-        #                                "pi")  # "C:\\Users\\Sander\\Downloads\\ball-tracking\\ball_tracking_example.mp4")
-        self.tracker = TriTracker.LaptopTracker(self.q_camera_read_green, self.q_camera_read_blue, self.q_camera_read_red, False)
+        self.tracker = tracking.Tracker(self.q_camera_read_green, self.q_camera_read_blue, self.q_camera_read_red,
+                                        "pi")  # "C:\\Users\\Sander\\Downloads\\ball-tracking\\ball_tracking_example.mp4")
+        #self.tracker = TriTracker.LaptopTracker(self.q_camera_read_green, self.q_camera_read_blue, self.q_camera_read_red, False)
 
 
     def run(self):
@@ -36,6 +37,7 @@ class TrackingTest(Thread):
     def listen(self):
         while self.running:
             try:
+                print(time.time())
                 datagreen = self.q_camera_read_green.get()
                 print("green"+ str(datagreen))
                 datablue = self.q_camera_read_blue.get()
