@@ -47,16 +47,18 @@ class GameThread(Thread):
 
             if datagreen is not None and datablue is not None and datared is not None:
                 print("red" + str(datared) + " blue" + str(datablue) + "green" + str(datagreen))
-                if datagreen > datablue:
+                if datablue < 0:
+                    datablue = 0
+                if datagreen < datablue:
                     datagreen = datablue
-                if datagreen < datared:
+                if datagreen > datared:
                     datagreen = datared
 
-                datagreen -= datared
+                datagreen -= datablue
                 if motion_thread.calibrating:
-                    datablue -= datared
-                if datablue > 0:
-                    calibratedY = (1 / datablue) * datagreen
+                    datared -= datablue
+                if datared > 0:
+                    calibratedY = (1 / datared) * datagreen
 
             result = self.controller.loop(calibratedY)
             tcp_thread.send(result)
