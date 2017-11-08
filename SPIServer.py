@@ -1,37 +1,54 @@
-import spidev
+import time
 from threading import Thread
 
-TRANSFER = 0b00000000
-READ = 0b10000000
-WRITE = 0b01000000
-NO_OPERATION = 0b110000000
+import spidev
 
-NO_DATA = 0b00000000
+goal_animation_time = 5.0
+goal_array_array = [[0b00000000, 0b00000110],
+                    [0b00000000, 0b10000000],
+                    [0b00000000, 0b10000000],
+                    [0b00000000, 0b01000000],
+                    [0b00000000, 0b00100000],
+                    [0b00000000, 0b00010000],
+                    [0b00000000, 0b00001000],
+                    [0b00000000, 0b00000100],
+                    [0b00000000, 0b00000010],
+                    [0b00000000, 0b11000000],
+                    [0b00000000, 0b01100000],
+                    [0b00000000, 0b00110000],
+                    [0b00000000, 0b00011000],
+                    [0b00000000, 0b00001100]]
+l_scored_array = [0b00000000, 0b00000000]
+r_scored_array = [0b00000000, 0b00000001]
 
 
 class SPIThread(Thread):
-    def __init__(self, q_read, q_write, mode, bus, device):
+    def __init__(self, q_write, mode, bus, device):
         Thread.__init__(self)
         self.running = False
-        self.q_read = q_read
         self.q_write = q_write
         self.spi = spidev.SpiDev()
-        self.spi.open(bus, device)
-        self.spi.mode = mode
-        self.spi.max_speed_hz = 31200000
+        self.spi.open(0, 0)
+        self.spi.max_speed_hz = 3900000
+        self.spi.mode = 0b00
 
     def run(self):
         self.running = True
         while self.running:
             if not self.q_write.empty():
-                write_data = [TRANSFER, self.q_write.get(False)]
-            else:
-                write_data = [READ, NO_DATA]
-                write_data = [NO_OPERATION, NO_DATA]  # Temporary line to not overflow queues.
-
-            read_data = self.spi.xfer2(write_data)
-            if not self.q_read.full():
-                self.q_read.put(read_data[1], False)
+                line = self.q_write.get(False)
+                if line == "":
+                    pass
+                elif line == "l":
+                    for message in goal_array_array:
+                        self.spi.writebytes(message)
+                        time.sleep(goal_animation_time / len(goal_array_array))
+                    self.spi.writebytes(l_scored_array)
+                elif line == "r":
+                    for message in goal_array_array:
+                        self.spi.writebytes(message)
+                        time.sleep(goal_animation_time / len(goal_array_array))
+                    self.spi.writebytes(r_scored_array)
         self.cleanup()
 
     def shutdown(self):

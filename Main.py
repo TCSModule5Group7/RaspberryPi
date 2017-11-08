@@ -113,7 +113,6 @@ if __name__ == "__main__":
 
         # QUEUES
         Logger.log("Initializing queues")
-        q_spi_read = Queue()  # Stores data read from the spi interface (should only contain bytes).
         q_spi_write = Queue()  # Stores data to be written to the spi interface (should only contain bytes).
         q_tcp_read = Queue()  # Stores data read from the tcp interface (should only contain strings).
         q_tcp_write = Queue()  # Stores data to be written to the tcp interface (should only contain strings).
@@ -136,7 +135,7 @@ if __name__ == "__main__":
             Logger.log_spi(
                 "Initializing spi-server with: " +
                 "[mode:" + str(mode) + "] [bus:" + str(bus) + "] [device:" + str(device) + "]")
-            spi_thread = SPIThread(q_spi_read, q_spi_write, mode, bus, device)
+            spi_thread = SPIThread(q_spi_write, mode, bus, device)
             Logger.log_spi(
                 "Initialized spi-server with: " +
                 "[mode:" + str(mode) + "] [bus:" + str(bus) + "] [device:" + str(device) + "]")
