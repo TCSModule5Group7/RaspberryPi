@@ -58,7 +58,7 @@ class GameController(object):
 
         # Update the field
         if self.state == self.GameState.RUNNING:
-            self.game.update(0.2)
+            self.game.update(1)
 
         # Render
         # if GameController.RENDER:

@@ -15,8 +15,8 @@ from physics.Vec2 import Vec2
 # import tracking
 # import numpy as np
 
-ACCELERATION = 10 * 5
-SPEED_BALL = 7 * 5
+ACCELERATION = 10
+SPEED_BALL = 7
 SPEED_RATIO_TRACKING_BALL = 2
 WIDTH = 1024
 HEIGHT = 768
@@ -89,15 +89,15 @@ class Game(object):
                 collision.resolve_collision(manifold)
 
         # Give ball minimum speed
-        ratio = SPEED_BALL / self.ball.abs_vel
-        if ratio > 1:
-            self.ball.velocity.x *= ratio + 0.01
-            self.ball.velocity.y *= ratio + 0.01
-        if self.track_ball.velocity == Vec2(0, 0):
-            ratio = SPEED_BALL / self.track_ball.abs_vel
-            if ratio > 1:
-                self.track_ball.velocity.x *= ratio + 0.01
-                self.track_ball.velocity.y *= ratio + 0.01
+        # ratio = SPEED_BALL / self.ball.abs_vel
+        # if ratio > 1:
+        #     self.ball.velocity.x *= ratio + 0.01
+        #     self.ball.velocity.y *= ratio + 0.01
+        # if self.track_ball.velocity == Vec2(0, 0):
+        #     ratio = SPEED_BALL / self.track_ball.abs_vel
+        #     if ratio > 1:
+        #         self.track_ball.velocity.x *= ratio + 0.01
+        #         self.track_ball.velocity.y *= ratio + 0.01
 
         # Calculate AI move
         self.computer.calculate_move(self.track_ball)
