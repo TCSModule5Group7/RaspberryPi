@@ -28,9 +28,9 @@ class SPIThread(Thread):
         self.running = False
         self.q_write = q_write
         self.spi = spidev.SpiDev()
-        self.spi.open(0, 0)
+        self.spi.open(bus, device)
         self.spi.max_speed_hz = 3900000
-        self.spi.mode = 0b00
+        self.spi.mode = mode
 
     def run(self):
         self.running = True
