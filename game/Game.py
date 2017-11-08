@@ -30,7 +30,7 @@ class Game(object):
         # self.pixels = np.zeros((WIDTH, HEIGHT))
 
         self.ball = Ball(920, 360)
-        self.ball.velocity = Vec2(-0.707, -0.707)
+        self.ball.velocity = Vec2(-0.707, -0.607)
         self.ball.velocity *= SPEED_BALL
         self.ball.abs_vel = math.sqrt(math.pow(self.ball.velocity.x, 2) + math.pow(self.ball.velocity.y, 2))
         self.track_ball = self.ball
