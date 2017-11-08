@@ -15,9 +15,7 @@ class SendThread(Thread):
 
     def run(self):
         while self.running:
-            event = threading.Event()
-            event.wait(timeout=(1 / FREQ * 1000))
-            # time.sleep(1 / FREQ * 1000)
+            time.sleep(0.1)
             self.tcp_thread.send(self.game_thread.get_gamestate())
 
     def shutdown(self):

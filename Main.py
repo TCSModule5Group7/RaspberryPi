@@ -44,7 +44,6 @@ class GameThread(Thread):
             lastFrameTime = currentTime
             calibratedY = -1
 
-            print("reading queues")
             datagreen = q_camera_read_green.get()
             if motion_thread.calibrating:
                 databluetemp = q_camera_read_blue.get()
@@ -70,7 +69,7 @@ class GameThread(Thread):
                     calibratedY = 1 - (1 / (datared - datablue)) * datagreen
 
             self.controller.loop(dt, calibratedY)
-            print "Y: " + str(calibratedY)
+            # print "Y: " + str(calibratedY)
 
     def cmdStart(self):
         motion_thread.calibrating = False
