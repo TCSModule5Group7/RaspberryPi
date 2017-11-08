@@ -68,6 +68,7 @@ class GameThread(Thread):
                 if (datared - datablue) > 0:
                     calibratedY = 1 - (1 / (datared - datablue)) * datagreen
 
+            print "delta=" + str(dt)
             self.controller.loop(dt, calibratedY)
 
     def cmdStart(self):
