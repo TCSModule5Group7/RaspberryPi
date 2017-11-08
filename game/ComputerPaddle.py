@@ -1,6 +1,6 @@
 from game.Paddle import Paddle
 
-SPEED_COMPUTER = 6
+SPEED_COMPUTER = 6 * 10
 
 
 class ComputerPaddle(Paddle):

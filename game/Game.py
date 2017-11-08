@@ -15,8 +15,8 @@ from physics.Vec2 import Vec2
 # import tracking
 # import numpy as np
 
-ACCELERATION = 10
-SPEED_BALL = 7
+ACCELERATION = 10 * 10
+SPEED_BALL = 7 * 10
 SPEED_RATIO_TRACKING_BALL = 2
 WIDTH = 1024
 HEIGHT = 768
