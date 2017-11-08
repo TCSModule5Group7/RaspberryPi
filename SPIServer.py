@@ -37,6 +37,7 @@ class SPIThread(Thread):
         while self.running:
             if not self.q_write.empty():
                 line = self.q_write.get(False)
+                print str(line)
                 if line == "":
                     pass
                 elif line == "l":
