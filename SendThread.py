@@ -16,7 +16,7 @@ class SendThread(Thread):
         while self.running:
             time.sleep(1 / FREQ)
             if self.tcp_thread.connected:
-                self.tcp_thread.send(self.game_thread.get_gamestate)
+                self.tcp_thread.send(self.game_thread.get_gamestate())
 
     def shutdown(self):
         self.running = False
