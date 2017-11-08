@@ -48,13 +48,14 @@ class Tracker(Thread):
             # define lower and upper boundaries of blue
             blueLower = (97, 100, 117)
             blueUpper = (117, 255, 255)
+            blueUpper = (117, 255, 255)
 
             RedLower = (23, 59, 119)  # yellow
             RedUpper = (54, 255, 255)  # yellow
 
-            ptsgreen = deque([self.buffersize])
-            ptsblue = deque([self.buffersize])
-            ptsred = deque([self.buffersize])
+            #ptsgreen = deque([self.buffersize])
+            #ptsblue = deque([self.buffersize])
+            #ptsred = deque([self.buffersize])
 
             # if a video path was not supplied, grab the reference
             # to the webcam
@@ -147,7 +148,7 @@ class Tracker(Thread):
 
                         # update the points queue
                         # print("centergreen" + str(centergreen))
-                        ptsgreen.appendleft(centergreen)
+                        #ptsgreen.appendleft(centergreen)
                         self.q_read_green.put(Ygreen)
 
                         if self.calibrating:
@@ -173,7 +174,7 @@ class Tracker(Thread):
                                     cv2.circle(frameblue, centerblue, 5, (0, 0, 255), -1)
                                     # only proceed if at least one contour was found
 
-                            ptsblue.appendleft(centerblue)
+                           #ptsblue.appendleft(centerblue)
                             self.q_read_blue.put(YBlue)
                             YRed = None
 
@@ -197,7 +198,7 @@ class Tracker(Thread):
                                     cv2.circle(frameblue, centerblue, 5, (0, 0, 255), -1)
 
                             # update the points queue
-                            ptsred.appendleft(centerRed)
+                            #ptsred.appendleft(centerRed)
                             self.q_read_red.put(YRed)
 
                         rawCapture.truncate(0)
