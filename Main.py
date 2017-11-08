@@ -68,7 +68,7 @@ class GameThread(Thread):
                 if (datared - datablue) > 0:
                     calibratedY = 1 - (1 / (datared - datablue)) * datagreen
 
-            self.controller.loop(dt, calibratedY)
+            self.controller.loop(1, calibratedY)
 
     def cmdStart(self):
         motion_thread.calibrating = False
