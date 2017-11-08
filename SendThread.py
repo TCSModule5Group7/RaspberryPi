@@ -1,7 +1,7 @@
 import time
 from threading import Thread
 
-FREQ = 15
+FREQ = 7
 
 
 class SendThread(Thread):
@@ -17,6 +17,7 @@ class SendThread(Thread):
             time.sleep(1 / FREQ)
             if self.tcp_thread.connected:
                 self.tcp_thread.send(self.game_thread.get_gamestate())
+                print "sent"
 
     def shutdown(self):
         self.running = False
