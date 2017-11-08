@@ -6,9 +6,9 @@ class TrackingBall(Ball):
         super(TrackingBall, self).__init__(x, y)
         self.restitution = 1
 
-    def update(self):
+    def update(self, delta):
         if self.pos.x > 40:
-            super(TrackingBall, self).update()
+            super(TrackingBall, self).update(delta)
 
     def render(self, game):
         return game.pixels

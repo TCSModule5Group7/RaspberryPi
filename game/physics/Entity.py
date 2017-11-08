@@ -13,8 +13,8 @@ class Entity(object):
     def collision_callback(self):
         return
 
-    def update(self, dt):
-        self.pos += self.velocity * dt
+    def update(self, delta):
+        self.pos += self.velocity * delta
         self.shape.set_pos(self.pos)
 
     def render(self, game):
