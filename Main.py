@@ -7,9 +7,11 @@ from Queue import Queue
 from threading import Thread
 
 import Logger
+from SendThread import SendThread
 from GameController import GameController
 from TCPClient import TCPClient
 from tracking.tracking import Tracker
+
 # from TriTracker import LaptopTracker
 
 # Switch to disable or enable the SPIServer.
@@ -61,14 +63,14 @@ class GameThread(Thread):
                     datagreen = datared
 
                 datagreen -= datablue
-                if datared > 0:
+                if (datared - datablue) > 0:
                     calibratedY = -(1 / (datared - datablue)) * datagreen
 
             currentTime = time.time()
             dt = currentTime - lastFrameTime
             lastFrameTime = currentTime
             result = self.controller.loop(dt, calibratedY)
-            tcp_thread.send(result)
+            # tcp_thread.send(result)
             print "Y: " + str(calibratedY)
 
     def cmdStart(self):
@@ -80,6 +82,9 @@ class GameThread(Thread):
 
     def cmdReset(self):
         self.controller.reset()
+
+    def get_gamestate(self):
+        return self.controller.get_gamestate()
 
     def shutdown(self):
         self.running = False
@@ -95,6 +100,7 @@ if __name__ == "__main__":
     game_thread = None
     motion_thread = None
     tcp_thread = None
+    send_thread = None
 
     try:
         # VARIABLES
@@ -173,6 +179,9 @@ if __name__ == "__main__":
         Logger.log_tcp("Starting tcp-server")
         tcp_thread.start()
         Logger.log_tcp("Started tcp-server")
+
+        # Send Thread
+        send_thread = SendThread(game_thread, tcp_thread)
 
         # INPUT
         while True:

@@ -1,5 +1,3 @@
-import time
-
 from game.Game import *
 
 
@@ -76,6 +74,13 @@ class GameController(object):
 
         # def shutdown(self):
         #     self.pygame.quit()
+
+    def get_gamestate(self):
+        return str(float(self.game.computer.pos.y) / HEIGHT) + "/" + str(
+            float(self.game.player.pos.y) / HEIGHT) + "/" + str(
+            float(self.game.ball.pos.x) / WIDTH) + "/" + str(
+            float(self.game.ball.pos.y) / HEIGHT) + "/" + str(
+            self.game.computer.score) + "/" + str(self.game.player.score) + "\n"
 
 
 def enum(*sequential, **named):
