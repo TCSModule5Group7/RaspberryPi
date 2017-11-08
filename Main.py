@@ -33,12 +33,15 @@ class GameThread(Thread):
         super(GameThread, self).start()
 
     def run(self):
-        lastFrameTime = 0
+        lastFrameTime = time.time()
         result = None
         datared = 0
         datablue = 0
 
         while self.running:
+            currentTime = time.time()
+            dt = currentTime - lastFrameTime
+            lastFrameTime = currentTime
             calibratedY = -1
 
             print("reading queues")
@@ -50,6 +53,7 @@ class GameThread(Thread):
                     datared = dataredtemp
                 if databluetemp is not None:
                     datablue = databluetemp
+                print "calibrating"
             else:
                 print "calibrated blue=" + str(datablue) + ", red=" + str(datared)
 
@@ -64,14 +68,10 @@ class GameThread(Thread):
 
                 datagreen -= datablue
                 if (datared - datablue) > 0:
-                    calibratedY = -(1 / (datared - datablue)) * datagreen
+                    calibratedY = (1 / (datared - datablue)) * datagreen
 
-            currentTime = time.time()
-            dt = currentTime - lastFrameTime
-            lastFrameTime = currentTime
-            result = self.controller.loop(dt, calibratedY)
-            # tcp_thread.send(result)
-            print "Y: " + str(calibratedY)
+            self.controller.loop(dt, 1 - calibratedY)
+            print "Y: " + str(1 - calibratedY)
 
     def cmdStart(self):
         motion_thread.calibrating = False
