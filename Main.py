@@ -81,6 +81,7 @@ class GameThread(Thread):
         self.controller.reset()
 
     def score_callback(self, player):
+        print "score_callback"
         if not q_spi_write.full():
             if player:
                 q_spi_write.put('r', block=False)

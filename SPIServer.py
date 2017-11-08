@@ -40,11 +40,13 @@ class SPIThread(Thread):
                 if line == "":
                     pass
                 elif line == "l":
+                    print "l scored"
                     for message in goal_array_array:
                         self.spi.writebytes(message)
                         time.sleep(goal_animation_time / len(goal_array_array))
                     self.spi.writebytes(l_scored_array)
                 elif line == "r":
+                    print "r scored"
                     for message in goal_array_array:
                         self.spi.writebytes(message)
                         time.sleep(goal_animation_time / len(goal_array_array))
