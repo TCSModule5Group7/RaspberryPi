@@ -12,7 +12,7 @@ class Connector(object):
 
     def update(self, paddleL, paddleR, ballX, ballY, scoreL, scoreR):
         self.socket.send(str(paddleL) + "/" + str(paddleR) + "/" + str(ballX) + "/" + str(ballY) + "/" + str(scoreL) +
-                         "/" + str(scoreR) + "\n")
+                         "/" + str(scoreR))
         return self.socket.makefile().readline()
 
     def update(self, string):
