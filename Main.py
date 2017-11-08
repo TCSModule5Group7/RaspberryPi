@@ -53,9 +53,8 @@ class GameThread(Thread):
                     datared = dataredtemp
                 if databluetemp is not None:
                     datablue = databluetemp
-                print "calibrating"
-            else:
-                print "calibrated blue=" + str(datablue) + ", red=" + str(datared)
+            # else:
+            #     print "calibrated blue=" + str(datablue) + ", red=" + str(datared)
 
             if datagreen is not None and datablue is not None and datared is not None:
                 print("red" + str(datared) + " blue" + str(datablue) + "green" + str(datagreen))
@@ -68,10 +67,10 @@ class GameThread(Thread):
 
                 datagreen -= datablue
                 if (datared - datablue) > 0:
-                    calibratedY = (1 / (datared - datablue)) * datagreen
+                    calibratedY = 1 - (1 / (datared - datablue)) * datagreen
 
-            self.controller.loop(dt, 1 - calibratedY)
-            print "Y: " + str(1 - calibratedY)
+            self.controller.loop(dt, calibratedY)
+            print "Y: " + str(calibratedY)
 
     def cmdStart(self):
         motion_thread.calibrating = False
