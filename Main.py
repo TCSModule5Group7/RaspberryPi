@@ -88,7 +88,7 @@ class GameThread(Thread):
             print "queue not full"
             if player:
                 print "putting in r queue"
-                q_spi_write.put_nowait("r", block=False)
+                q_spi_write.put("r", block=False)
             else:
                 print "putting in l queue"
                 q_spi_write.put("l", block=False)
