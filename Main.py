@@ -37,6 +37,7 @@ class GameThread(Thread):
         result = None
         datared = 0
         datablue = 0
+        datagreen = 0
 
         while self.running:
             currentTime = time.time()
