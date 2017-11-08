@@ -85,9 +85,12 @@ class GameThread(Thread):
     def score_callback(self, player):
         print "score_callback"
         if not q_spi_write.full():
+            print "queue not full"
             if player:
+                print "putting in r queue"
                 q_spi_write.put("r", block=False)
             else:
+                print "putting in l queue"
                 q_spi_write.put("l", block=False)
         else:
             print "queue full"
