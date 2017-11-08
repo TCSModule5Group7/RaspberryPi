@@ -6,9 +6,9 @@ class GameController(object):
     FRAMES_PER_SECOND = 15
     RENDER = False
 
-    def __init__(self, useMotion):
+    def __init__(self, useMotion, score_callback):
         self.k_up = self.k_down = 0
-        self.game = Game(WIDTH, HEIGHT)
+        self.game = Game(WIDTH, HEIGHT, score_callback)
         self.useMotion = useMotion
 
         self.GameState = enum('STOPPED', 'RUNNING')

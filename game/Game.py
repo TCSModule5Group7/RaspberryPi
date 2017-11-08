@@ -23,9 +23,10 @@ HEIGHT = 768
 
 
 class Game(object):
-    def __init__(self, width, height):
+    def __init__(self, width, height, score_callback):
         self.width = width
         self.height = height
+        self.score_callback = score_callback
         # self.pixels = np.zeros((WIDTH, HEIGHT))
 
         self.ball = Ball(920, 360)
@@ -116,17 +117,19 @@ class Game(object):
 
     def add_point(self):
         if self.ball.pos.x < WIDTH / 2:
-            self.computer.add_point()
+            self.player.add_point()
             self.ball.pos = Vec2(540, 360)
             self.ball.velocity.y = random.uniform(-0.5 * SPEED_BALL, 0.5 * SPEED_BALL)
             self.ball.abs_vel = math.sqrt(math.pow(self.ball.velocity.x, 2) + math.pow(self.ball.velocity.y, 2))
             self.track_ball = self.spawn_trackball()
+            self.score_callback(True)
         else:
-            self.player.add_point()
+            self.computer.add_point()
             self.ball.pos = Vec2(540, 360)
             self.ball.velocity.y = random.uniform(-0.7 * SPEED_BALL, 0.7 * SPEED_BALL)
             self.ball.abs_vel = math.sqrt(math.pow(self.ball.velocity.x, 2) + math.pow(self.ball.velocity.y, 2))
             self.track_ball = self.spawn_trackball()
+            self.score_callback(False)
         print self.get_score()
 
     def get_score(self):

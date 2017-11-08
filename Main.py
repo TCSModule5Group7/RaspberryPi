@@ -26,7 +26,7 @@ class GameThread(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.running = False
-        self.controller = GameController(True)
+        self.controller = GameController(True, self.score_callback)
 
     def start(self):
         self.running = True
@@ -79,6 +79,13 @@ class GameThread(Thread):
 
     def cmdReset(self):
         self.controller.reset()
+
+    def score_callback(self, player):
+        if not q_spi_write.full():
+            if player:
+                q_spi_write.put('r', block=False)
+            else:
+                q_spi_write.put('l', block=False)
 
     def get_gamestate(self):
         return self.controller.get_gamestate()
