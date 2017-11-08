@@ -45,8 +45,8 @@ class GameThread(Thread):
             lastFrameTime = currentTime
             calibratedY = -1
 
-            if not motion_thread.calibrating:
-                datagreen = q_camera_read_green.get()
+            # if not motion_thread.calibrating:
+            datagreen = q_camera_read_green.get()
             if motion_thread.calibrating:
                 databluetemp = q_camera_read_blue.get()
                 dataredtemp = q_camera_read_red.get()
