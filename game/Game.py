@@ -72,7 +72,7 @@ class Game(object):
                     # Transfer momentum
                     vel_dir = self.ball.velocity / Vec2(SPEED_BALL, SPEED_BALL)
                     ratio = 1 / vel_dir.y
-                    self.ball.velocity.y *= random.uniform(-ratio, ratio)
+                    # self.ball.velocity.y *= random.uniform(-ratio, ratio)
 
                 # Check for point
                 if entity == self.wall_east or entity == self.wall_west:

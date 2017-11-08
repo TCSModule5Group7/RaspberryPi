@@ -1,4 +1,5 @@
 from game.Game import *
+import time
 
 
 class GameController(object):
@@ -32,7 +33,7 @@ class GameController(object):
         self.resetting = True
 
     def loop(self, delta, player_y=-1):
-        # time.sleep(1 / GameController.FRAMES_PER_SECOND)
+        time.sleep(1 / GameController.FRAMES_PER_SECOND)
         if self.resetting:
             self.game = Game(WIDTH, HEIGHT)
             self.resetting = False
@@ -57,7 +58,7 @@ class GameController(object):
 
         # Update the field
         if self.state == self.GameState.RUNNING:
-            self.game.update(delta)
+            self.game.update(0.2)
 
         # Render
         # if GameController.RENDER:
