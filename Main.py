@@ -44,7 +44,8 @@ class GameThread(Thread):
             lastFrameTime = currentTime
             calibratedY = -1
 
-            datagreen = q_camera_read_green.get()
+            if not motion_thread.calibrating:
+                datagreen = q_camera_read_green.get()
             if motion_thread.calibrating:
                 databluetemp = q_camera_read_blue.get()
                 dataredtemp = q_camera_read_red.get()
@@ -84,9 +85,11 @@ class GameThread(Thread):
         print "score_callback"
         if not q_spi_write.full():
             if player:
-                q_spi_write.put('r', block=False)
+                q_spi_write.put("r", block=False)
             else:
-                q_spi_write.put('l', block=False)
+                q_spi_write.put("l", block=False)
+        else:
+            print "queue full"
 
     def get_gamestate(self):
         return self.controller.get_gamestate()
