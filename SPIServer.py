@@ -3,7 +3,7 @@ from threading import Thread
 
 import spidev
 
-goal_animation_time = 5.0
+goal_animation_time = 2.0
 goal_array_array = [[0b00000000, 0b00000110],
                     [0b00000000, 0b10000000],
                     [0b00000000, 0b10000000],
